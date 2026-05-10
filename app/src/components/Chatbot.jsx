@@ -1,138 +1,162 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from "react";
 
-const t = {
+const i18n = {
   en: {
-    triggerTitle: 'Ask Mirent Assistant', triggerSub: 'Available 24/7 — answers in EN or FIL',
-    panelTitle: 'Mirent Assistant', greeting: 'Hi! I can help you check availability, unit types, and how to book. What would you like to know?',
-    placeholder: 'Type your question...', quickBtns: ['Available units', 'How to book', 'Rates'],
-    botRates: 'Pricing is shared directly by agents. Tap "How to book" to connect with one.',
-    botBook: 'To book, contact an agent directly. Tap the Inquire button on any unit.',
-    botAvail: 'Check the calendar above for real-time availability. Green = open!',
-    botDefault: 'For more details, please inquire via the unit cards above or contact an agent.'
+    name: "Mirent Assistant", sub: "Always here to help!",
+    welcome: "Hi! I can help you check availability, unit types, and how to book. What would you like to know?",
+    placeholder: "Type your question...",
+    units: "Units", book: "How to book", rates: "Rates",
   },
   fil: {
-    triggerTitle: 'Tanungin ang Mirent Assistant', triggerSub: 'Bukas 24/7 — sumasagot sa EN o FIL',
-    panelTitle: 'Mirent Assistant', greeting: 'Kumusta! Matutulungan kita tungkol sa availability, uri ng unit, at paraan ng pag-book.',
-    placeholder: 'I-type ang iyong tanong...', quickBtns: ['Mga available na unit', 'Paano mag-book', 'Presyo'],
-    botRates: 'Ang presyo ay ibinibigay ng mga ahente. I-tap ang "Paano mag-book" para makakonekta.',
-    botBook: 'Para mag-book, makipag-ugnayan sa ahente. I-tap ang Magtanong sa anumang unit.',
-    botAvail: 'Tingnan ang calendar para sa real-time na availability. Berde = libre!',
-    botDefault: 'Para sa karagdagang detalye, makipag-ugnayan sa pamamagitan ng unit cards o ahente.'
-  }
-}
+    name: "Mirent Assistant", sub: "Lagi kaming handa!",
+    welcome: "Kumusta! Makakatulong ako sa pagtsek ng availability, uri ng unit, at paraan ng pag-book. Ano ang gusto mong malaman?",
+    placeholder: "I-type ang iyong tanong...",
+    units: "Mga Unit", book: "Paano mag-book", rates: "Mga rate",
+  },
+};
 
-function getBotReply(text, lang) {
-  const q = text.toLowerCase()
-  const l = t[lang]
-  if (q.includes('rate') || q.includes('price') || q.includes('presyo') || q.includes('magkano')) return l.botRates
-  if (q.includes('book') || q.includes('reserve') || q.includes('mag-book')) return l.botBook
-  if (q.includes('avail') || q.includes('bakante') || q.includes('unit')) return l.botAvail
-  return l.botDefault
-}
+const QUICK = {
+  en:  { units: "What units are available?", book: "How do I book a unit?", rates: "What are your rates?" },
+  fil: { units: "Anong mga unit ang available?", book: "Paano mag-book ng unit?", rates: "Magkano ang mga rate?" },
+};
 
-export default function Chatbot({ lang, open, setOpen }) {
-  const [messages, setMessages] = useState([])
-  const [input, setInput] = useState('')
+export default function Chatbot({ lang }) {
+  const t = i18n[lang];
+  const [open, setOpen]       = useState(false);
+  const [input, setInput]     = useState("");
+  const [messages, setMessages] = useState([{ role: "bot", text: t.welcome }]);
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(null);
 
-  const addMsg = (text, type) => setMessages(prev => [...prev, { text, type }])
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
-  const sendMsg = (text) => {
-    if (!text.trim()) return
-    addMsg(text, 'user')
-    setInput('')
-    setTimeout(() => addMsg(getBotReply(text, lang), 'bot'), 500)
-  }
+  const sendMsg = async (text) => {
+    if (!text.trim()) return;
+    setInput("");
+    setMessages(prev => [...prev, { role: "user", text }]);
+    setLoading(true);
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          system: `You are Mirent Assistant, a friendly AI chatbot for Mirent — a condo rental platform in the Philippines.
+You help users with:
+- Checking unit availability (Studio, 1-Bedroom, 2-Bedroom)
+- Explaining how to book (click Inquire button, fill form, wait for confirmation)
+- Sharing rates (Studio: ₱800/night, 1-Bedroom: ₱1,200/night, 2-Bedroom: ₱1,800/night)
+- Explaining promos (Long stay 7 nights: 10% off)
+Keep answers short, warm, and helpful. Use a bit of Filipino flavor when appropriate.`,
+          messages: [{ role: "user", content: text }],
+        }),
+      });
+      const data = await res.json();
+      const reply = data.content?.map(i => i.text || "").join("") || "Sorry, I couldn't get a response. Please try again!";
+      setMessages(prev => [...prev, { role: "bot", text: reply }]);
+    } catch {
+      setMessages(prev => [...prev, { role: "bot", text: "Oops! Something went wrong. Please try again later." }]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
-      {!open && (
-        <div onClick={() => setOpen(true)} style={{
-          background: 'var(--surface)', border: '1px solid var(--gold-dim)',
-          borderRadius: 12, padding: '14px 16px', margin: '0 16px 16px',
-          display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer'
-        }}>
-          <div style={{
-            width: 38, height: 38, background: '#1e3a8a', borderRadius: 10,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 20, flexShrink: 0
-          }}>🤖</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--gold-light)', marginBottom: 2 }}>
-              {t[lang].triggerTitle}
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--muted)' }}>{t[lang].triggerSub}</div>
+      <style>{`
+        .chat-widget {
+          position: fixed; bottom: 24px; right: 24px;
+          width: 340px; z-index: 300;
+        }
+        .chat-header {
+          background: linear-gradient(90deg,#7c3aed,#a855f7);
+          border-radius: 16px 16px 0 0;
+          padding: 12px 16px;
+          display: flex; align-items: center; gap: 10px;
+          cursor: pointer; user-select: none;
+          box-shadow: 0 4px 20px rgba(124,58,237,.3);
+        }
+        .chat-widget.minimized .chat-header { border-radius: 16px; }
+        .chat-avatar { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
+        .chat-head-info { flex:1; }
+        .chat-head-name { font-weight:800; font-size:0.95rem; color:#fff; }
+        .chat-head-sub  { font-size:0.72rem; color:rgba(255,255,255,0.7); }
+        .chat-min-btn { background:rgba(255,255,255,0.15); border:none; color:#fff; width:26px; height:26px; border-radius:50%; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; }
+        .chat-min-btn:hover { background:rgba(255,255,255,0.3); }
+
+        .chat-body { background:var(--chat-bg,#f3f0ff); border:1px solid var(--border,#e5e0f8); border-top:none; border-radius:0 0 16px 16px; overflow:hidden; }
+        .chat-widget.minimized .chat-body { display:none; }
+
+        .chat-messages { height:240px; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; }
+        .chat-messages::-webkit-scrollbar { width:4px; }
+        .chat-messages::-webkit-scrollbar-thumb { background:var(--border,#e5e0f8); border-radius:4px; }
+
+        .msg { max-width:85%; padding:9px 13px; border-radius:14px; font-size:0.83rem; line-height:1.4; }
+        .msg-bot  { background:var(--surface,#fff); color:var(--text,#1e1433); align-self:flex-start; border:1px solid var(--border,#e5e0f8); border-bottom-left-radius:4px; }
+        .msg-user { background:#7c3aed; color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
+
+        .typing { display:flex; gap:4px; align-items:center; padding:9px 13px; background:var(--surface,#fff); border:1px solid var(--border,#e5e0f8); border-radius:14px; border-bottom-left-radius:4px; align-self:flex-start; }
+        .typing span { width:7px; height:7px; border-radius:50%; background:#8b5cf6; animation:bounce 1.2s infinite; }
+        .typing span:nth-child(2) { animation-delay:.2s; }
+        .typing span:nth-child(3) { animation-delay:.4s; }
+        @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+
+        .chat-quick { padding:8px 14px 10px; display:flex; gap:6px; flex-wrap:wrap; }
+        .quick-btn { background:var(--surface,#fff); border:1px solid var(--border,#e5e0f8); border-radius:20px; padding:4px 12px; font-size:0.75rem; font-weight:700; color:#7c3aed; cursor:pointer; transition:background 0.2s,color 0.2s; }
+        .quick-btn:hover { background:#7c3aed; color:#fff; border-color:#7c3aed; }
+
+        .chat-input-row { display:flex; gap:8px; padding:0 14px 14px; align-items:center; }
+        .chat-input { flex:1; background:var(--surface,#fff); border:1px solid var(--border,#e5e0f8); border-radius:20px; padding:8px 14px; font-size:0.83rem; color:var(--text,#1e1433); outline:none; transition:border-color 0.2s; }
+        .chat-input:focus { border-color:#7c3aed; }
+        .chat-input::placeholder { color:var(--text-muted,#6b6080); }
+        .chat-send-btn { width:36px; height:36px; border-radius:50%; background:#7c3aed; border:none; color:#fff; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.2s,transform 0.15s; }
+        .chat-send-btn:hover { background:#6d28d9; transform:scale(1.08); }
+      `}</style>
+
+      <div className={`chat-widget${open ? "" : " minimized"}`}>
+        <div className="chat-header" onClick={() => setOpen(!open)}>
+          <div className="chat-avatar">🤖</div>
+          <div className="chat-head-info">
+            <div className="chat-head-name">{t.name}</div>
+            <div className="chat-head-sub">{t.sub}</div>
           </div>
-          <span style={{ color: 'var(--subtle)', fontSize: 18 }}>›</span>
+          <button className="chat-min-btn" onClick={e => { e.stopPropagation(); setOpen(!open); }}>
+            {open ? "−" : "+"}
+          </button>
         </div>
-      )}
 
-      {open && (
-        <div style={{
-          background: 'var(--surface)', border: '1px solid var(--border)',
-          borderRadius: 12, margin: '0 16px 16px', overflow: 'hidden'
-        }}>
-          <div style={{
-            background: '#1e3a8a', padding: '12px 14px',
-            display: 'flex', alignItems: 'center', gap: 8
-          }}>
-            <span style={{ fontSize: 18 }}>🤖</span>
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#fff', flex: 1 }}>
-              {t[lang].panelTitle}
-            </span>
-            <button onClick={() => setOpen(false)} style={{
-              background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff',
-              width: 24, height: 24, borderRadius: 6, fontSize: 14
-            }}>×</button>
-          </div>
-
-          <div style={{ padding: 12, minHeight: 140, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{
-              maxWidth: '85%', padding: '8px 10px', borderRadius: 10,
-              background: 'var(--surface2)', color: 'var(--text)', fontSize: 12, lineHeight: 1.5
-            }}>
-              {t[lang].greeting}
-            </div>
-            {messages.map((msg, i) => (
-              <div key={i} style={{
-                maxWidth: '85%', padding: '8px 10px', borderRadius: 10, fontSize: 12, lineHeight: 1.5,
-                alignSelf: msg.type === 'user' ? 'flex-end' : 'flex-start',
-                background: msg.type === 'user' ? '#1e3a8a' : 'var(--surface2)',
-                color: msg.type === 'user' ? '#dbeafe' : 'var(--text)'
-              }}>
-                {msg.text}
-              </div>
+        <div className="chat-body">
+          <div className="chat-messages">
+            {messages.map((m, i) => (
+              <div key={i} className={`msg msg-${m.role}`}>{m.text}</div>
             ))}
+            {loading && (
+              <div className="typing"><span/><span/><span/></div>
+            )}
+            <div ref={bottomRef} />
           </div>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0 12px 10px' }}>
-            {t[lang].quickBtns.map((btn, i) => (
-              <button key={i} onClick={() => sendMsg(btn)} style={{
-                background: 'var(--surface2)', border: '1px solid var(--border)',
-                color: 'var(--muted)', fontSize: 11, padding: '5px 10px', borderRadius: 20
-              }}>
-                {btn}
-              </button>
-            ))}
+          <div className="chat-quick">
+            <button className="quick-btn" onClick={() => sendMsg(QUICK[lang].units)}>{t.units}</button>
+            <button className="quick-btn" onClick={() => sendMsg(QUICK[lang].book)}>{t.book}</button>
+            <button className="quick-btn" onClick={() => sendMsg(QUICK[lang].rates)}>{t.rates}</button>
           </div>
 
-          <div style={{ display: 'flex', gap: 6, padding: '10px 12px', borderTop: '1px solid var(--border)' }}>
+          <div className="chat-input-row">
             <input
+              className="chat-input"
               value={input}
+              placeholder={t.placeholder}
               onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && sendMsg(input)}
-              placeholder={t[lang].placeholder}
-              style={{
-                flex: 1, background: 'var(--bg)', border: '1px solid var(--border)',
-                borderRadius: 8, padding: '8px 10px', color: 'var(--text)', fontSize: 12
-              }}
+              onKeyDown={e => { if (e.key === "Enter") sendMsg(input); }}
             />
-            <button onClick={() => sendMsg(input)} style={{
-              background: 'var(--blue)', border: 'none', color: '#fff',
-              width: 34, height: 34, borderRadius: 8, fontSize: 16
-            }}>›</button>
+            <button className="chat-send-btn" onClick={() => sendMsg(input)}>➤</button>
           </div>
         </div>
-      )}
+      </div>
     </>
-  )
+  );
 }
