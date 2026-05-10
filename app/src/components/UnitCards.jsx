@@ -1,51 +1,43 @@
 const t = {
   en: {
-    label: 'Available units', available: 'Available', partial: 'Partially available',
-    highFloor: 'High floor', midFloor: 'Mid floor', inquire: 'Inquire about this unit'
+    label: 'Units', available: 'Open', partial: 'Partial',
+    highFloor: 'High floor', midFloor: 'Mid floor', inquire: 'Inquire'
   },
   fil: {
-    label: 'Mga available na unit', available: 'Available', partial: 'Bahagyang available',
-    highFloor: 'Mataas na palapag', midFloor: 'Gitnang palapag', inquire: 'Magtanong tungkol sa unit na ito'
+    label: 'Mga unit', available: 'Libre', partial: 'Bahagya',
+    highFloor: 'Mataas', midFloor: 'Gitna', inquire: 'Magtanong'
   }
 }
 
 const units = [
-  { type: 'Studio Unit', tower: 'Tower A', floor: 'highFloor', status: 'available' },
-  { type: '1-Bedroom Unit', tower: 'Tower B', floor: 'midFloor', status: 'partial' },
-  { type: '2-Bedroom Unit', tower: 'Tower A', floor: 'highFloor', status: 'available' },
+  { type: 'Studio', tower: 'Tower A', floor: 'highFloor', status: 'available' },
+  { type: '1-Bedroom', tower: 'Tower B', floor: 'midFloor', status: 'partial' },
+  { type: '2-Bedroom', tower: 'Tower A', floor: 'highFloor', status: 'available' },
 ]
 
 export default function UnitCards({ lang, onInquire }) {
   return (
-    <div style={{ padding: '0 16px 16px' }}>
-      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 10 }}>
-        {t[lang].label}
-      </div>
+    <div style={{ marginBottom: 12 }}>
+      <div className="section-label">{t[lang].label}</div>
       {units.map((unit, i) => (
         <div key={i} style={{
           background: 'var(--surface)', border: '1px solid var(--border)',
-          borderRadius: 12, padding: 14, marginBottom: 10
+          borderRadius: 8, padding: '8px 10px', marginBottom: 6,
+          display: 'flex', alignItems: 'center', gap: 8
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{unit.type}</span>
-            <span style={{
-              fontSize: 11, padding: '3px 8px', borderRadius: 20,
-              background: unit.status === 'available' ? '#14532d' : '#713f12',
-              color: unit.status === 'available' ? '#86efac' : '#fde68a'
-            }}>
-              {t[lang][unit.status]}
-            </span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>{unit.type}</div>
+            <div style={{ fontSize: 11, color: 'var(--muted)' }}>🏢 {unit.tower} · 🪜 {t[lang][unit.floor]}</div>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 10 }}>
-            🏢 {unit.tower} &nbsp;&nbsp; 🪜 {t[lang][unit.floor]}
-          </div>
+          <span style={{
+            fontSize: 10, padding: '2px 7px', borderRadius: 20, marginRight: 4,
+            background: unit.status === 'available' ? '#14532d' : '#713f12',
+            color: unit.status === 'available' ? '#86efac' : '#fde68a'
+          }}>{t[lang][unit.status]}</span>
           <button onClick={onInquire} style={{
-            width: '100%', background: 'var(--blue)', color: '#fff', border: 'none',
-            padding: 9, borderRadius: 8, fontSize: 13, fontWeight: 500,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
-          }}>
-            💬 {t[lang].inquire}
-          </button>
+            background: 'var(--blue)', color: '#fff', border: 'none',
+            padding: '5px 10px', borderRadius: 6, fontSize: 11, fontWeight: 500
+          }}>{t[lang].inquire}</button>
         </div>
       ))}
     </div>

@@ -1,26 +1,30 @@
 import './index.css'
 import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import PromoBanner from './components/PromoBanner'
 import Calendar from './components/Calendar'
 import UnitCards from './components/UnitCards'
 import Chatbot from './components/Chatbot'
-import Footer from './components/Footer'
+import PromoBanner from './components/PromoBanner'
 import { useState } from 'react'
 
 function App() {
   const [lang, setLang] = useState('en')
-  const [chatOpen, setChatOpen] = useState(false)
+  const [chatOpen, setChatOpen] = useState(true)
 
   return (
-    <div>
+    <div className="app-shell">
       <Navbar lang={lang} setLang={setLang} />
-      <Hero lang={lang} />
-      <PromoBanner lang={lang} />
-      <Calendar lang={lang} />
-      <UnitCards lang={lang} onInquire={() => setChatOpen(true)} />
-      <Chatbot lang={lang} open={chatOpen} setOpen={setChatOpen} />
-      <Footer lang={lang} />
+      <div className="main-content">
+        <div className="panel">
+          <UnitCards lang={lang} onInquire={() => setChatOpen(true)} />
+          <PromoBanner lang={lang} />
+        </div>
+        <div className="panel">
+          <Calendar lang={lang} />
+        </div>
+        <div className="panel">
+          <Chatbot lang={lang} open={chatOpen} setOpen={setChatOpen} />
+        </div>
+      </div>
     </div>
   )
 }
