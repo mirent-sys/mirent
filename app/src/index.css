@@ -1,0 +1,28 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #0d1f6e;
+  --blue: #1a56db;
+  --red: #e02424;
+  --gold-light: #f5e6a3;
+  --gold-dim: #c9a84c;
+  --bg: #1a1608;
+  --surface: #22200d;
+  --surface2: #2e2b12;
+  --text: #f0e8c8;
+  --muted: #b8a87a;
+  --subtle: #7a6e4a;
+  --border: #3a3418;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+button { cursor: pointer; font-family: inherit; }
+input { font-family: inherit; }
+a { text-decoration: none; }
