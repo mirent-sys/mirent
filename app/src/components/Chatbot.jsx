@@ -1,318 +1,193 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { UNITS, BNAME, TYPE_LABEL } from '../data/units';
+import './Chatbot.css';
 
 const i18n = {
   en: {
-    name: "Mirent Assistant", sub: "Always here to help!",
-    welcome: "Hi! I can help you check availability, unit types, and how to book. What would you like to know?",
-    placeholder: "Type your question...",
-    units: "Units", book: "How to book", rates: "Rates",
+    name: 'Mirent Assistant',
+    sub: 'Always here to help!',
+    welcome: "Hi! I can help you check availability, unit types, and booking. What would you like to know?",
+    placeholder: 'Type your question...',
+    units: 'Units', book: 'How to book', rates: 'Rates',
   },
   fil: {
-    name: "Mirent Assistant", sub: "Lagi kaming handa!",
-    welcome: "Kumusta! Makakatulong ako sa pagtsek ng availability, uri ng unit, at paraan ng pag-book. Ano ang gusto mong malaman?",
-    placeholder: "I-type ang iyong tanong...",
-    units: "Mga Unit", book: "Paano mag-book", rates: "Mga rate",
+    name: 'Mirent Assistant',
+    sub: 'Lagi kaming handa!',
+    welcome: 'Kumusta! Makakatulong ako sa pagtsek ng availability, uri ng unit, at booking. Ano ang gusto mong malaman?',
+    placeholder: 'I-type ang iyong tanong...',
+    units: 'Mga Unit', book: 'Paano mag-book', rates: 'Mga rate',
   },
 };
 
 const QUICK = {
-  en:  { units: "What units are available?", book: "How do I book a unit?", rates: "What are your rates?" },
-  fil: { units: "Anong mga unit ang available?", book: "Paano mag-book ng unit?", rates: "Magkano ang mga rate?" },
+  en: ['Check availability', 'Unit types & rates', 'How to book', 'Contact info'],
+  fil: ['Tsek ng availability', 'Uri ng unit at rates', 'Paano mag-book', 'Contact info'],
 };
 
-// How many seconds of idle before auto-collapsing
-const IDLE_TIMEOUT_MS = 15000;
+const SYSTEM_PROMPT = `You are Mirent Assistant, a friendly and helpful AI for MiRent — a condo rental platform in Makati, Philippines. You speak naturally in Filipino (Tagalog) or English depending on what the user uses. Mix both naturally if the user does (like "Taglish").
 
-export default function Chatbot({ lang = "en" }) {
-  const t = i18n[lang] ?? i18n.en;
-  const [open, setOpen]         = useState(false);
-  const [input, setInput]       = useState("");
-  const [messages, setMessages] = useState([{ role: "bot", text: t.welcome }]);
-  const [loading, setLoading]   = useState(false);
-  const [pulse, setPulse]       = useState(true); // attention pulse on bubble
-  const bottomRef  = useRef(null);
-  const idleTimer  = useRef(null);
+MiRent has 14 units across 3 buildings:
+- Gramercy Residences: Studios (₱800/night), 1BR (₱1,200/night), 2BR (₱1,800/night), 3BR (₱2,500/night), Parking (₱300/night)
+- Knightsbridge (KBP): Studios (₱900/night), 1BR (₱1,400/night)
+- Milano Residences: 2BR (₱2,000/night)
 
-  // Scroll to bottom on new messages
+All units include WiFi and AC. Pool and Gym availability vary per unit.
+
+For bookings and inquiries, direct users to use the search feature on the website to find available units and click "Inquire now". For urgent matters, they can contact the property manager directly.
+
+Be warm, concise, and helpful. Keep responses short and focused. If asked about specific unit availability, remind them to use the search/date picker to see real-time availability.`;
+
+export default function Chatbot() {
+  const [open, setOpen] = useState(false);
+  const [lang, setLang] = useState('en');
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [unread, setUnread] = useState(0);
+  const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
+  const t = i18n[lang];
+
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
-
-  // Stop pulse animation after 3s so it's not annoying forever
-  useEffect(() => {
-    const t = setTimeout(() => setPulse(false), 6000);
-    return () => clearTimeout(t);
+    if (messages.length === 0) {
+      setMessages([{ role: 'assistant', content: t.welcome }]);
+    }
   }, []);
 
-  // Reset idle timer whenever there's activity inside the chat
-  const resetIdle = useCallback(() => {
-    clearTimeout(idleTimer.current);
-    idleTimer.current = setTimeout(() => {
-      setOpen(false);
-    }, IDLE_TIMEOUT_MS);
-  }, []);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-  // Start idle timer when chat opens; clear when it closes
   useEffect(() => {
     if (open) {
-      resetIdle();
-    } else {
-      clearTimeout(idleTimer.current);
+      setUnread(0);
+      setTimeout(() => inputRef.current?.focus(), 300);
     }
-    return () => clearTimeout(idleTimer.current);
-  }, [open, resetIdle]);
+  }, [open]);
 
-  const handleOpen = () => {
-    setOpen(true);
-    setPulse(false);
-  };
-
-  const sendMsg = async (text) => {
+  async function sendMessage(text) {
     if (!text.trim() || loading) return;
-    resetIdle(); // reset idle on every send
-    setInput("");
-    setMessages(prev => [...prev, { role: "user", text }]);
+    const userMsg = { role: 'user', content: text };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    setInput('');
     setLoading(true);
+
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
+          model: 'claude-sonnet-4-20250514',
           max_tokens: 1000,
-          system: `You are Mirent Assistant, a friendly AI chatbot for Mirent — a condo rental platform in the Philippines.
-You help users with:
-- Checking unit availability (Studio, 1-Bedroom, 2-Bedroom)
-- Explaining how to book (click Inquire button, fill form, wait for confirmation)
-- Sharing rates (Studio: ₱800/night, 1-Bedroom: ₱1,200/night, 2-Bedroom: ₱1,800/night)
-- Explaining promos (Long stay 7 nights: 10% off)
-Keep answers short, warm, and helpful. Use a bit of Filipino flavor when appropriate.`,
-          messages: [{ role: "user", content: text }],
+          system: SYSTEM_PROMPT,
+          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
         }),
       });
-      const data = await res.json();
-      const reply = data.content?.map(i => i.text || "").join("") || "Sorry, I couldn't get a response. Please try again!";
-      setMessages(prev => [...prev, { role: "bot", text: reply }]);
-    } catch {
-      setMessages(prev => [...prev, { role: "bot", text: "Oops! Something went wrong. Please try again later." }]);
+
+      const data = await response.json();
+      const reply = data.content?.[0]?.text || 'Sorry, I could not get a response. Please try again.';
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+      if (!open) setUnread(u => u + 1);
+    } catch (err) {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Oops! May problema sa connection. Please try again. 😊',
+      }]);
     } finally {
       setLoading(false);
-      resetIdle(); // reset idle after response too
     }
-  };
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(input);
+    }
+  }
+
+  function switchLang() {
+    const newLang = lang === 'en' ? 'fil' : 'en';
+    setLang(newLang);
+    const nt = i18n[newLang];
+    setMessages([{ role: 'assistant', content: nt.welcome }]);
+  }
 
   return (
     <>
-      <style>{`
-        /* ── Floating bubble ── */
-        .cb-bubble {
-          position: fixed;
-          bottom: 24px;
-          right: 24px;
-          width: 56px;
-          height: 56px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #7c3aed, #a855f7);
-          box-shadow: 0 4px 20px rgba(124,58,237,.45);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          z-index: 400;
-          border: none;
-          outline: none;
-          font-size: 1.4rem;
-          transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .cb-bubble:hover {
-          transform: scale(1.1);
-          box-shadow: 0 6px 28px rgba(124,58,237,.6);
-        }
-        .cb-bubble.pulse::after {
-          content: '';
-          position: absolute;
-          inset: -4px;
-          border-radius: 50%;
-          border: 2px solid #a855f7;
-          animation: cb-ring 1.4s ease-out infinite;
-        }
-        @keyframes cb-ring {
-          0%   { transform: scale(1);   opacity: .8; }
-          100% { transform: scale(1.6); opacity: 0;  }
-        }
+      {/* Bubble */}
+      <button className={`chat-bubble${open ? ' open' : ''}`} onClick={() => setOpen(v => !v)} aria-label="Open chat">
+        {open ? (
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        ) : (
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        )}
+        {!open && unread > 0 && <span className="chat-badge">{unread}</span>}
+      </button>
 
-        /* ── Chat window ── */
-        .cb-window {
-          position: fixed;
-          bottom: 90px;
-          right: 24px;
-          width: 340px;
-          z-index: 399;
-          border-radius: 16px;
-          overflow: hidden;
-          box-shadow: 0 8px 40px rgba(30,10,60,.25);
-          /* Enter/exit animation */
-          transform-origin: bottom right;
-          animation: cb-in 0.22s cubic-bezier(.34,1.56,.64,1) forwards;
-        }
-        .cb-window.closing {
-          animation: cb-out 0.18s ease-in forwards;
-        }
-        @keyframes cb-in {
-          from { opacity: 0; transform: scale(0.7) translateY(20px); }
-          to   { opacity: 1; transform: scale(1)   translateY(0);    }
-        }
-        @keyframes cb-out {
-          from { opacity: 1; transform: scale(1)   translateY(0);    }
-          to   { opacity: 0; transform: scale(0.7) translateY(20px); }
-        }
-
-        /* ── Header ── */
-        .cb-header {
-          background: linear-gradient(90deg, #7c3aed, #a855f7);
-          padding: 12px 16px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-        .cb-avatar {
-          width: 36px; height: 36px; border-radius: 50%;
-          background: rgba(255,255,255,0.2);
-          display: flex; align-items: center; justify-content: center;
-          font-size: 1.1rem; flex-shrink: 0;
-        }
-        .cb-head-info { flex: 1; }
-        .cb-head-name { font-weight: 800; font-size: 0.95rem; color: #fff; }
-        .cb-head-sub  { font-size: 0.72rem; color: rgba(255,255,255,0.7); }
-        .cb-close-btn {
-          background: rgba(255,255,255,0.15); border: none; color: #fff;
-          width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
-          font-size: 1rem; display: flex; align-items: center; justify-content: center;
-          transition: background 0.2s;
-        }
-        .cb-close-btn:hover { background: rgba(255,255,255,0.3); }
-
-        /* ── Body ── */
-        .cb-body {
-          background: var(--chat-bg, #f3f0ff);
-          border: 1px solid var(--border, #e5e0f8);
-          border-top: none;
-          border-radius: 0 0 16px 16px;
-        }
-        .cb-messages {
-          height: 240px; overflow-y: auto;
-          padding: 14px;
-          display: flex; flex-direction: column; gap: 10px;
-        }
-        .cb-messages::-webkit-scrollbar { width: 4px; }
-        .cb-messages::-webkit-scrollbar-thumb { background: var(--border,#e5e0f8); border-radius: 4px; }
-
-        .msg { max-width: 85%; padding: 9px 13px; border-radius: 14px; font-size: 0.83rem; line-height: 1.4; }
-        .msg-bot  { background: var(--surface,#fff); color: var(--text,#1e1433); align-self: flex-start; border: 1px solid var(--border,#e5e0f8); border-bottom-left-radius: 4px; }
-        .msg-user { background: #7c3aed; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
-
-        .typing { display:flex; gap:4px; align-items:center; padding:9px 13px; background:var(--surface,#fff); border:1px solid var(--border,#e5e0f8); border-radius:14px; border-bottom-left-radius:4px; align-self:flex-start; }
-        .typing span { width:7px; height:7px; border-radius:50%; background:#8b5cf6; animation:bounce 1.2s infinite; }
-        .typing span:nth-child(2) { animation-delay:.2s; }
-        .typing span:nth-child(3) { animation-delay:.4s; }
-        @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
-
-        .cb-quick { padding: 8px 14px 10px; display: flex; gap: 6px; flex-wrap: wrap; }
-        .quick-btn {
-          background: var(--surface,#fff); border: 1px solid var(--border,#e5e0f8);
-          border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; font-weight: 700;
-          color: #7c3aed; cursor: pointer; transition: background 0.2s, color 0.2s;
-        }
-        .quick-btn:hover { background: #7c3aed; color: #fff; border-color: #7c3aed; }
-
-        .cb-input-row { display: flex; gap: 8px; padding: 0 14px 14px; align-items: center; }
-        .cb-input {
-          flex: 1; background: var(--surface,#fff); border: 1px solid var(--border,#e5e0f8);
-          border-radius: 20px; padding: 8px 14px; font-size: 0.83rem;
-          color: var(--text,#1e1433); outline: none; transition: border-color 0.2s;
-        }
-        .cb-input:focus { border-color: #7c3aed; }
-        .cb-input::placeholder { color: var(--text-muted,#6b6080); }
-        .cb-send-btn {
-          width: 36px; height: 36px; border-radius: 50%; background: #7c3aed;
-          border: none; color: #fff; font-size: 1rem; cursor: pointer;
-          display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-          transition: background 0.2s, transform 0.15s;
-        }
-        .cb-send-btn:hover { background: #6d28d9; transform: scale(1.08); }
-        .cb-send-btn:disabled { background: #c4b5fd; cursor: not-allowed; transform: none; }
-      `}</style>
-
-      {/* Floating bubble — always visible */}
-      {!open && (
-        <button
-          className={`cb-bubble${pulse ? " pulse" : ""}`}
-          onClick={handleOpen}
-          aria-label="Open Mirent Assistant"
-        >
-          🤖
-        </button>
-      )}
-
-      {/* Chat window — only when open */}
-      {open && (
-        <div className="cb-window" onMouseMove={resetIdle} onKeyDown={resetIdle}>
-          {/* Header */}
-          <div className="cb-header">
-            <div className="cb-avatar">🤖</div>
-            <div className="cb-head-info">
-              <div className="cb-head-name">{t.name}</div>
-              <div className="cb-head-sub">{t.sub}</div>
-            </div>
-            <button
-              className="cb-close-btn"
-              onClick={() => setOpen(false)}
-              aria-label="Close chat"
-            >
-              −
-            </button>
+      {/* Window */}
+      <div className={`chat-window${open ? ' open' : ''}`}>
+        {/* Header */}
+        <div className="chat-header">
+          <div className="chat-avatar">🏡</div>
+          <div className="chat-header-info">
+            <div className="chat-name">{t.name}</div>
+            <div className="chat-sub">{t.sub}</div>
           </div>
-
-          {/* Messages */}
-          <div className="cb-body">
-            <div className="cb-messages">
-              {messages.map((m, i) => (
-                <div key={i} className={`msg msg-${m.role}`}>{m.text}</div>
-              ))}
-              {loading && (
-                <div className="typing"><span/><span/><span/></div>
-              )}
-              <div ref={bottomRef} />
-            </div>
-
-            {/* Quick replies */}
-            <div className="cb-quick">
-              <button className="quick-btn" onClick={() => { resetIdle(); sendMsg(QUICK[lang].units); }}>{t.units}</button>
-              <button className="quick-btn" onClick={() => { resetIdle(); sendMsg(QUICK[lang].book); }}>{t.book}</button>
-              <button className="quick-btn" onClick={() => { resetIdle(); sendMsg(QUICK[lang].rates); }}>{t.rates}</button>
-            </div>
-
-            {/* Input */}
-            <div className="cb-input-row">
-              <input
-                className="cb-input"
-                value={input}
-                placeholder={t.placeholder}
-                onChange={e => { setInput(e.target.value); resetIdle(); }}
-                onKeyDown={e => { if (e.key === "Enter") sendMsg(input); }}
-              />
-              <button
-                className="cb-send-btn"
-                onClick={() => sendMsg(input)}
-                disabled={loading}
-                aria-label="Send"
-              >
-                ➤
-              </button>
-            </div>
-          </div>
+          <button className="chat-lang-btn" onClick={switchLang} title="Switch language">
+            {lang === 'en' ? '🇵🇭' : '🇺🇸'}
+          </button>
         </div>
-      )}
+
+        {/* Messages */}
+        <div className="chat-messages">
+          {messages.map((msg, i) => (
+            <div key={i} className={`chat-msg ${msg.role}`}>
+              {msg.role === 'assistant' && <div className="msg-avatar">🏡</div>}
+              <div className="msg-bubble">{msg.content}</div>
+            </div>
+          ))}
+
+          {/* Quick replies — show after welcome */}
+          {messages.length === 1 && (
+            <div className="chat-quick">
+              {QUICK[lang].map(q => (
+                <button key={q} className="quick-btn" onClick={() => sendMessage(q)}>{q}</button>
+              ))}
+            </div>
+          )}
+
+          {loading && (
+            <div className="chat-msg assistant">
+              <div className="msg-avatar">🏡</div>
+              <div className="msg-bubble typing">
+                <span /><span /><span />
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input */}
+        <div className="chat-input-area">
+          <input
+            ref={inputRef}
+            className="chat-input"
+            placeholder={t.placeholder}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={loading}
+          />
+          <button
+            className="chat-send"
+            onClick={() => sendMessage(input)}
+            disabled={!input.trim() || loading}
+          >
+            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
     </>
   );
 }
