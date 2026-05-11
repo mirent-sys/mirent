@@ -18,7 +18,9 @@ export default function HomePage({ visible, onSearch }) {
         <div className="home-logo">Mi<span>Rent</span></div>
         <p className="home-tagline">Find a place that feels like <em>home.</em></p>
 
-        <SearchBar variant="home" filters={{}} onSearch={onSearch} />
+        <div className="home-search-wrapper">
+          <SearchBar variant="home" filters={{}} onSearch={onSearch} />
+        </div>
 
         <div className="home-stats">
           <span className="hs"><strong>14</strong> active listings</span>

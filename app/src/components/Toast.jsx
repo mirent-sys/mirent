@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react';
-import './Toast.css';
+import { useEffect } from 'react';
 
-export default function Toast({ message, onDone }) {
+export default function Toast({ message, onHide }) {
   useEffect(() => {
     if (!message) return;
-    const t = setTimeout(onDone, 3000);
+    const t = setTimeout(onHide, 3000);
     return () => clearTimeout(t);
-  }, [message]);
+  }, [message, onHide]);
 
   return (
     <div className={`toast${message ? ' show' : ''}`}>
