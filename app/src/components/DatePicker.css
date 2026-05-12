@@ -4,7 +4,16 @@
    ======================================================== */
 .date-picker-inner {
   padding: 8px 14px 8px;
-  width: 320px;
+  width: 320px;          /* desktop default */
+  box-sizing: border-box;
+}
+
+/* Mobile: fill whatever container the popup has */
+@media (max-width: 640px) {
+  .date-picker-inner {
+    width: 100%;
+    padding: 10px 16px 10px;
+  }
 }
 
 /* ── Segmented Move in | Move out ── */

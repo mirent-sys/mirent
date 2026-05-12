@@ -193,23 +193,6 @@ export default function HomePage({ visible, onSearch, onLogin }) {
                 <SearchBar variant="home" filters={HOME_SEARCH_FILTERS} onSearch={onSearch} />
               </div>
 
-              {/* Trust Badges — clickable links */}
-              <div className="home-trust-strip">
-                <button className="trust-link" onClick={() => onSearch({})}>
-                  <span className="trust-icon">🏢</span>
-                  <span className="trust-text">Verified Units</span>
-                </button>
-                <span className="trust-sep">|</span>
-                <button className="trust-link" onClick={() => onSearch({})}>
-                  <span className="trust-icon">📅</span>
-                  <span className="trust-text">Flexible Dates</span>
-                </button>
-                <span className="trust-sep">|</span>
-                <button className="trust-link" onClick={() => onLogin?.('register')}>
-                  <span className="trust-icon">✅</span>
-                  <span className="trust-text">Easy Booking</span>
-                </button>
-              </div>
             </div>
 
             {/* ── Stats Strip ── */}

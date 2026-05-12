@@ -330,19 +330,8 @@
   isolation: isolate;
 }
 
-/* ── Homepage-specific: calendar opens downward but is fixed to viewport
-       so it never covers footer and always fits all dates ── */
+/* ── Homepage: just boost z-index, keep natural downward position ── */
 .home-search-wrapper .date-picker {
-  position: fixed;
-  /* anchor to bottom of viewport, just above the footer (~45px tall) */
-  bottom: 48px;
-  top: auto;
-  right: auto;
-  left: 50%;
-  transform: translateX(-10%);
-  /* height = space between 30% from top and just above footer */
-  max-height: calc(100vh - 30% - 48px);
-  overflow: hidden;
   z-index: 700;
 }
 .home-search-wrapper .search-card {
@@ -470,20 +459,185 @@
 .stat-sep { color: rgba(64,145,108,.4); margin: 0 .15rem; font-weight: 300; }
 
 /* ========================================
-   RESPONSIVE — ≤ 799px (mobile / tablet)
+   RESPONSIVE — ≤ 799px (tablet)
    ======================================== */
 @media (max-width: 799px) {
   .home-3col {
     grid-template-columns: 1fr;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    /* let content scroll within the fixed page shell */
+    scroll-behavior: smooth;
   }
   .home-side-ads { display: none; }
-  .home-center { padding: 0 0.65rem; }
+  .home-center { padding: 0 0.75rem; }
   .home-logo { font-size: clamp(2rem, 11vw, 3.4rem); }
   .hero-ad { height: clamp(80px, 18vw, 110px); }
   .home-auth-btns .btn-ghost-home { display: none; }
 }
+
+/* ========================================
+   RESPONSIVE — ≤ 640px (mobile portrait)
+   ======================================== */
+@media (max-width: 640px) {
+
+  /* ── Page shell: allow center column to scroll ── */
+  .home-content {
+    padding-top: 2.2rem;
+    overflow: hidden;
+  }
+  .home-3col {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+    gap: 0;
+  }
+
+  /* ── Center column: scrollable, full-width ── */
+  .home-center {
+    padding: 0.3rem 0.85rem 1rem;
+    gap: 0.55rem;
+    width: 100%;
+    overflow-y: visible;
+    align-items: stretch;   /* stretch children to full width */
+  }
+
+  /* ── Hero banner ── */
+  .hero-ad {
+    height: clamp(90px, 22vw, 130px);
+    border-radius: 10px;
+  }
+
+  /* ── Logo — big, centred ── */
+  .home-logo-section { justify-content: center; }
+  .home-logo {
+    font-size: clamp(2.4rem, 14vw, 3.8rem);
+    text-align: center;
+    letter-spacing: -0.05em;
+  }
+
+  /* ── Tagline — centred, readable ── */
+  .home-tagline {
+    font-size: clamp(0.88rem, 3.8vw, 1.05rem);
+    text-align: center;
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  /* ── Search wrapper — full width ── */
+  .home-search-section {
+    width: 100%;
+    gap: 0.45rem;
+  }
+  .home-search-wrapper {
+    width: 100%;
+  }
+
+  /* ── Homepage date-picker override: full width, above footer ── */
+  .home-search-wrapper .date-picker {
+    position: fixed;
+    bottom: 56px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    transform: none;
+    border-radius: 16px;
+    max-height: 58vh;
+    overflow: hidden;
+    z-index: 800;
+  }
+
+  /* ── Trust strip: compact horizontal scroll ── */
+  .home-trust-strip {
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 0.7rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 10px;
+    scrollbar-width: none;
+  }
+  .home-trust-strip::-webkit-scrollbar { display: none; }
+  .trust-sep { flex-shrink: 0; }
+  .trust-text { white-space: nowrap; }
+
+  /* ── Stats strip: 2×2 grid ── */
+  .home-stats-strip {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    grid-template-rows: 1fr 1px 1fr;
+    border-radius: 12px;
+    padding: 0.5rem 0.6rem;
+    gap: 0;
+  }
+  .hss-item {
+    padding: 0.3rem 0.5rem;
+    flex: unset;
+  }
+  .hss-sep {
+    /* hide the separators — CSS grid handles layout */
+    display: none;
+  }
+  .hss-num { font-size: clamp(0.9rem, 4vw, 1.1rem); }
+  .hss-label { font-size: clamp(0.5rem, 2vw, 0.58rem); }
+
+  /* ── Building explorer: single column, compact ── */
+  .home-building-explorer {
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+  .hbe-card {
+    flex-direction: row;    /* thumbnail left, info right on mobile */
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .hbe-img-wrap {
+    width: 90px;
+    height: auto;
+    min-height: 70px;
+    flex-shrink: 0;
+  }
+  .hbe-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hbe-tag {
+    top: 4px;
+    left: 4px;
+    font-size: 0.44rem;
+  }
+  .hbe-info {
+    padding: 0.5rem 0.65rem 0.5rem 0.5rem;
+    justify-content: center;
+  }
+  .hbe-name {
+    font-size: clamp(0.68rem, 2.8vw, 0.8rem);
+    white-space: normal;
+  }
+  .hbe-location { font-size: clamp(0.55rem, 2.2vw, 0.62rem); }
+  .hbe-units, .hbe-price { font-size: clamp(0.52rem, 2vw, 0.6rem); }
+  .hbe-arrow { right: 8px; bottom: auto; top: 50%; transform: translateY(-50%); }
+  .hbe-card:hover .hbe-arrow { transform: translateY(-50%) translateX(2px); }
+
+  /* ── Topbar ── */
+  .home-topbar {
+    padding: 0.45rem 0.85rem;
+  }
+  .lang-toggle {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.7rem;
+  }
+  .btn-fill-home {
+    font-size: 0.7rem;
+    padding: 0.28rem 0.85rem;
+  }
+}
+
 
 /* ========================================
    RESPONSIVE — 800–1099px (small desktop)
