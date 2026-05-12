@@ -45,6 +45,39 @@ const leftAds = [
     thumb: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=120&h=120&fit=crop&crop=center' },
 ];
 
+const BUILDINGS_EXPLORER = [
+  {
+    key: 'gramercy',
+    name: 'Gramercy Residences',
+    location: 'BGC, Taguig City',
+    units: 48,
+    priceFrom: '₱800',
+    tag: 'Most Popular',
+    tagColor: 'terra',
+    image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=500&h=180&fit=crop&crop=center',
+  },
+  {
+    key: 'knightsbridge',
+    name: 'Knightsbridge Peak',
+    location: 'Kalayaan Ave, BGC',
+    units: 32,
+    priceFrom: '₱1,200',
+    tag: 'Premium',
+    tagColor: 'gold',
+    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=500&h=180&fit=crop&crop=center',
+  },
+  {
+    key: 'milano',
+    name: 'Milano Residences',
+    location: 'Makati City',
+    units: 41,
+    priceFrom: '₱900',
+    tag: 'Spacious',
+    tagColor: 'green',
+    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500&h=180&fit=crop&crop=center',
+  },
+];
+
 const rightAds = [
   { title: '2BR Corner',    building: 'Gramercy',     price: '₱2,200/night', tag: 'Hot Deal',  tagColor: 'terra', bldKey: 'gramercy',
     thumb: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=120&h=120&fit=crop&crop=center' },
@@ -177,6 +210,57 @@ export default function HomePage({ visible, onSearch, onLogin }) {
                   <span className="trust-text">Easy Booking</span>
                 </button>
               </div>
+            </div>
+
+            {/* ── Stats Strip ── */}
+            <div className="home-stats-strip">
+              <div className="hss-item">
+                <span className="hss-num">120+</span>
+                <span className="hss-label">Units</span>
+              </div>
+              <div className="hss-sep" />
+              <div className="hss-item">
+                <span className="hss-num">3</span>
+                <span className="hss-label">Buildings</span>
+              </div>
+              <div className="hss-sep" />
+              <div className="hss-item">
+                <span className="hss-num">BGC</span>
+                <span className="hss-label">Metro Manila</span>
+              </div>
+              <div className="hss-sep" />
+              <div className="hss-item">
+                <span className="hss-num">⚡</span>
+                <span className="hss-label">Instant Book</span>
+              </div>
+            </div>
+
+            {/* ── Building Explorer ── */}
+            <div className="home-building-explorer">
+              {BUILDINGS_EXPLORER.map(b => (
+                <div
+                  key={b.key}
+                  className="hbe-card"
+                  onClick={() => onSearch({ building: b.key })}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => e.key === 'Enter' && onSearch({ building: b.key })}
+                >
+                  <div className="hbe-img-wrap">
+                    <img src={b.image} alt={b.name} className="hbe-img" />
+                    <span className={`hbe-tag tag-${b.tagColor}`}>{b.tag}</span>
+                  </div>
+                  <div className="hbe-info">
+                    <div className="hbe-name">{b.name}</div>
+                    <div className="hbe-location">📍 {b.location}</div>
+                    <div className="hbe-meta">
+                      <span className="hbe-units">{b.units} units</span>
+                      <span className="hbe-price">from {b.priceFrom}/night</span>
+                    </div>
+                  </div>
+                  <div className="hbe-arrow">›</div>
+                </div>
+              ))}
             </div>
 
           </div>
