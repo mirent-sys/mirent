@@ -9,8 +9,8 @@
   padding: 0;
   z-index: 200;
   transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow-y: auto;
-  min-height: 100vh;
+  overflow: visible;
+  height: 100vh;
 }
 
 .home-page.hidden {
@@ -30,120 +30,58 @@
 .lang-toggle {
   background: white;
   border: 1px solid var(--sand);
-  color: var(--ink);
-  font-size: 0.8rem;
+  color: var(--leaf);
+  font-size: 1.2rem;
   cursor: pointer;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  line-height: 1;
 }
 
 .lang-toggle:hover {
   background: var(--terra-soft);
-  color: var(--terra);
   border-color: var(--terra);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transform: scale(1.08);
 }
 
 .lang-toggle:active {
-  transform: scale(0.95);
+  transform: scale(0.93);
 }
 
-/* ========== ADS SECTION ========== */
-.home-ads-container {
-  width: 100%;
-  max-width: 600px;
-  margin-bottom: 1rem;
-  padding: 0 1rem;
-}
-
-.ads-carousel {
-  display: flex;
-  gap: 0.75rem;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  padding: 0.5rem 0;
-  -webkit-overflow-scrolling: touch;
-}
-
-.ads-carousel::-webkit-scrollbar {
-  height: 4px;
-}
-
-.ads-carousel::-webkit-scrollbar-track {
-  background: var(--sand-light);
-  border-radius: 10px;
-}
-
-.ads-carousel::-webkit-scrollbar-thumb {
-  background: var(--sand);
-  border-radius: 10px;
-}
-
-.ad-thumbnail {
-  position: relative;
-  flex: 0 0 calc((100vw - 2rem) * 0.7);
-  max-width: 200px;
-  height: 140px;
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  border: 1px solid var(--sand);
-}
-
-.ad-thumbnail:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-.ad-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.ad-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
-  display: flex;
-  align-items: flex-end;
-  padding: 0.75rem;
-}
-
-.ad-title {
-  color: white;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
+/* ========== ADS SECTION (hidden - removed to fit screen) ========== */
+.home-ads-container { display: none; }
 
 /* ========== MAIN CONTENT ========== */
 .home-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex: 1;
   width: 100%;
   max-width: 100%;
-  padding: 1rem;
-  gap: 1.5rem;
+  padding: clamp(1.5rem, 7vh, 4rem) 1rem 0.75rem;
+  gap: 0.75rem;
+  min-height: 0;
 }
 
 /* ========== LOGO SECTION ========== */
 .home-logo-section {
   display: flex;
   justify-content: center;
-  margin-top: 1rem;
+  margin-top: 0;
 }
 
 .home-logo {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 12vw, 4.5rem);
+  font-size: clamp(3rem, 12vw, 5.5rem);
   font-weight: 900;
   color: var(--leaf);
   letter-spacing: -0.06em;
@@ -158,11 +96,11 @@
 
 /* ========== TAGLINE ========== */
 .home-tagline {
-  font-size: clamp(0.95rem, 3vw, 1.2rem);
+  font-size: clamp(0.85rem, 2.5vw, 1.1rem);
   color: var(--ink-60);
   text-align: center;
-  margin: 0.5rem 0;
-  line-height: 1.5;
+  margin: 0;
+  line-height: 1.4;
   letter-spacing: 0.2px;
   max-width: 90vw;
 }
@@ -170,8 +108,10 @@
 /* ========== SEARCH BAR ========== */
 .home-search-wrapper {
   width: 100%;
-  max-width: min(90vw, 520px);
-  margin: 1rem 0;
+  max-width: min(90vw, 620px);
+  margin: 0;
+  position: relative;
+  z-index: 500;
 }
 
 /* ========== ACTION BUTTONS ========== */
@@ -180,7 +120,7 @@
   gap: 0.75rem;
   justify-content: center;
   flex-wrap: wrap;
-  margin: 0.5rem 0;
+  margin: 0;
   width: 100%;
   max-width: 90vw;
 }
@@ -227,9 +167,9 @@
   justify-content: center;
   gap: 0.3rem;
   flex-wrap: wrap;
-  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+  font-size: clamp(0.7rem, 1.5vw, 0.85rem);
   color: var(--ink-60);
-  margin-top: 1rem;
+  margin-top: 0;
   max-width: 90vw;
 }
 
@@ -249,13 +189,9 @@
 
 /* ========== RESPONSIVE: EXTRA SMALL (< 360px) ========== */
 @media (max-width: 359px) {
-  .home-page {
-    padding: 0;
-  }
-
   .home-content {
-    gap: 1rem;
-    padding: 0.75rem;
+    gap: 0.5rem;
+    padding: 0.5rem;
   }
 
   .home-logo {
@@ -263,44 +199,26 @@
   }
 
   .home-tagline {
-    font-size: 0.85rem;
-    margin: 0.3rem 0;
+    font-size: 0.8rem;
   }
 
   .btn-home-primary {
-    padding: 0.6rem 1.25rem;
-    font-size: 0.8rem;
-    min-height: 36px;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.78rem;
+    min-height: 34px;
   }
 
   .lang-toggle {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.7rem;
-  }
-
-  .ad-thumbnail {
-    flex: 0 0 calc((100vw - 1.5rem) * 0.75);
-    height: 110px;
-  }
-
-  .ad-title {
-    font-size: 0.75rem;
-  }
-
-  .home-ads-container {
-    padding: 0 0.75rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.68rem;
   }
 }
 
 /* ========== RESPONSIVE: SMALL (360px - 600px) ========== */
 @media (min-width: 360px) and (max-width: 600px) {
-  .home-page {
-    padding: 0;
-  }
-
   .home-content {
-    gap: 1.25rem;
-    padding: 1rem 0.75rem;
+    gap: 0.65rem;
+    padding: 0.75rem;
   }
 
   .home-logo {
@@ -308,7 +226,7 @@
   }
 
   .home-tagline {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   .home-search-wrapper {
@@ -316,35 +234,22 @@
   }
 
   .btn-home-primary {
-    padding: 0.7rem 1.75rem;
-    font-size: 0.9rem;
-    min-height: 40px;
+    padding: 0.65rem 1.75rem;
+    font-size: 0.88rem;
+    min-height: 38px;
   }
 
   .lang-toggle {
-    padding: 0.45rem 0.9rem;
-    font-size: 0.75rem;
-  }
-
-  .ad-thumbnail {
-    flex: 0 0 calc((100vw - 1.5rem) * 0.65);
-    height: 130px;
-  }
-
-  .home-ads-container {
-    padding: 0 0.75rem;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.72rem;
   }
 }
 
 /* ========== RESPONSIVE: MEDIUM (601px - 1024px) ========== */
 @media (min-width: 601px) and (max-width: 1024px) {
-  .home-page {
-    padding: 0;
-  }
-
   .home-content {
-    gap: 2rem;
-    padding: 2rem 1.5rem;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
     max-width: 700px;
   }
 
@@ -353,11 +258,11 @@
   }
 
   .home-tagline {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
   }
 
   .btn-home-primary {
-    padding: 0.85rem 2.25rem;
+    padding: 0.8rem 2.25rem;
     font-size: 1rem;
     min-height: 44px;
   }
@@ -366,27 +271,14 @@
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
   }
-
-  .ad-thumbnail {
-    flex: 0 0 220px;
-    height: 150px;
-  }
-
-  .home-ads-container {
-    padding: 0;
-  }
 }
 
 /* ========== RESPONSIVE: LARGE (1025px+) ========== */
 @media (min-width: 1025px) {
-  .home-page {
-    padding: 0;
-  }
-
   .home-content {
-    gap: 2.5rem;
-    padding: 2.5rem 2rem;
-    max-width: 800px;
+    gap: 1.25rem;
+    padding: 1.5rem 2rem;
+    max-width: 860px;
   }
 
   .home-logo {
@@ -394,15 +286,15 @@
   }
 
   .home-tagline {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
 
   .home-search-wrapper {
-    max-width: 600px;
+    max-width: 660px;
   }
 
   .btn-home-primary {
-    padding: 1rem 2.75rem;
+    padding: 0.9rem 2.75rem;
     font-size: 1.05rem;
     min-height: 48px;
   }
@@ -411,45 +303,27 @@
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
   }
-
-  .ad-thumbnail {
-    flex: 0 0 240px;
-    height: 160px;
-  }
-
-  .home-ads-container {
-    padding: 0;
-  }
 }
 
 /* ========== LANDSCAPE MODE ========== */
 @media (max-height: 500px) {
   .home-content {
-    gap: 0.75rem;
-    padding: 0.75rem;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
   }
 
   .home-logo {
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin: 0;
   }
 
   .home-tagline {
-    margin: 0.2rem 0;
-    font-size: 0.9rem;
+    margin: 0;
+    font-size: 0.8rem;
   }
 
   .home-quick-stats {
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
-  }
-
-  .ad-thumbnail {
-    height: 100px;
-  }
-
-  .ad-title {
-    font-size: 0.75rem;
+    margin-top: 0;
+    font-size: 0.7rem;
   }
 }
-
