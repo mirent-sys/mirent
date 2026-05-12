@@ -496,11 +496,18 @@
 
   /* ── Center column: scrollable, full-width ── */
   .home-center {
-    padding: 0.3rem 0.85rem 1rem;
-    gap: 0.55rem;
+    padding: 0.3rem 0.85rem 1.5rem;
+    gap: 0.5rem;
     width: 100%;
     overflow-y: visible;
-    align-items: stretch;   /* stretch children to full width */
+    align-items: stretch;
+  }
+
+  /* Building explorer: show 2 cards visible, rest scrolls */
+  .home-building-explorer {
+    overflow-y: auto;
+    max-height: none;   /* let it flow naturally */
+    -webkit-overflow-scrolling: touch;
   }
 
   /* ── Hero banner ── */

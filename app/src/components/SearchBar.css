@@ -407,11 +407,18 @@
   }
 
   .date-picker {
-    position: absolute;
-    top: calc(100% + 8px);
+    /* fixed so it's never clipped by overflow:hidden parents */
+    position: fixed;
+    top: auto;
+    bottom: 55px;      /* safely above the footer */
+    left: 10px;
+    right: 10px;
+    width: auto;
     border-radius: 18px;
-    max-height: 400px;
-    overflow: hidden;
+    max-height: calc(100vh - 55px - 15%);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 900;
   }
 }
 

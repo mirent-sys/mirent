@@ -8,12 +8,58 @@
   box-sizing: border-box;
 }
 
-/* Mobile: fill whatever container the popup has */
+/* Mobile: fill popup width, larger touch targets */
 @media (max-width: 640px) {
   .date-picker-inner {
     width: 100%;
-    padding: 10px 16px 10px;
+    padding: 12px 16px 14px;
+    box-sizing: border-box;
   }
+
+  /* Bigger segment buttons — easier to tap */
+  .dp-seg-btn {
+    padding: 7px 10px;
+    font-size: 0.78rem;
+  }
+
+  /* Bigger month nav buttons */
+  .dp-nav {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+
+  .dp-month {
+    font-size: 1rem;
+  }
+
+  /* Day header labels */
+  .dp-day-hdr {
+    font-size: 0.55rem;
+    padding: 3px 0;
+  }
+
+  /* Day cells — minimum 38px tap target */
+  .dp-day {
+    padding: 8px 2px;
+    font-size: 0.82rem;
+    border-radius: 8px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Action buttons */
+  .dp-ok {
+    padding: 8px 18px;
+    font-size: 0.78rem;
+  }
+  .dp-clear {
+    padding: 6px 10px;
+    font-size: 0.74rem;
+  }
+  .dp-hint { font-size: 0.62rem; }
 }
 
 /* ── Segmented Move in | Move out ── */
