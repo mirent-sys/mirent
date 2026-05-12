@@ -132,15 +132,17 @@
   display: flex;
   flex-direction: column;
   gap: clamp(0.3rem, 0.8vh, 0.5rem);
-  padding: 0.15rem clamp(0.35rem, 0.8vw, 0.6rem);
+  padding: clamp(1rem, 14vh, 8rem) clamp(0.35rem, 0.8vw, 0.6rem) 0.15rem;
 }
 .side-ads-label {
-  font-size: clamp(0.5rem, 0.85vw, 0.6rem);
-  font-weight: 700;
+  font-size: clamp(0.56rem, 0.98vw, 0.68rem);
+  font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--ink-30);
-  margin: 0 0 0.1rem;
+  color: var(--leaf);
+  margin: 0 0 0.35rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1.5px solid rgba(64,145,108,0.2);
 }
 .side-ad-card {
   background: rgba(255,255,255,0.78);
@@ -347,6 +349,55 @@
 .stat-item { white-space: nowrap; }
 .stat-item strong { color: var(--leaf); font-weight: 800; }
 .stat-sep { color: rgba(64,145,108,.4); margin: 0 0.15rem; font-weight: 300; }
+
+/* ========== TRUST STRIP ========== */
+.home-trust-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.6rem, 1.5vw, 1.2rem);
+  flex-wrap: wrap;
+  width: min(100%, 820px);
+  padding: clamp(0.55rem, 1.4vh, 0.85rem) 1.2rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(64,145,108,0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.trust-link {
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-body);
+  transition: opacity 0.15s ease;
+}
+.trust-link:hover {
+  opacity: 0.7;
+}
+.trust-link:hover .trust-text {
+  text-decoration: underline;
+  text-decoration-color: rgba(64,145,108,0.5);
+  text-underline-offset: 3px;
+}
+.trust-icon { font-size: clamp(0.7rem, 1.2vw, 0.88rem); line-height: 1; }
+.trust-text {
+  font-size: clamp(0.62rem, 1.15vw, 0.76rem);
+  font-weight: 600;
+  color: var(--ink-60);
+  letter-spacing: 0.01em;
+}
+.trust-sep {
+  color: rgba(64,145,108,0.3);
+  font-size: 0.75rem;
+  font-weight: 300;
+  user-select: none;
+}
 
 /* ========== RESPONSIVE ========== */
 /* Hide side ads below 800px */

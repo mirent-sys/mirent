@@ -1,6 +1,6 @@
 .date-picker-inner {
-  padding: 18px;
-  width: 312px;
+  padding: 20px;
+  width: 390px;
 }
 
 /* Segmented Move in | Move out */
@@ -81,7 +81,7 @@
 
 .dp-month {
   font-family: var(--font-display);
-  font-size: .95rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--ink);
 }
@@ -119,8 +119,8 @@
 
 .dp-day {
   text-align: center;
-  padding: 8px 2px;
-  font-size: .78rem;
+  padding: 10px 2px;
+  font-size: .82rem;
   color: var(--ink);
   cursor: pointer;
   border-radius: 8px;

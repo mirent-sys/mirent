@@ -143,18 +143,23 @@ export default function HomePage({ visible, onSearch, onLogin }) {
               <div className="home-search-wrapper">
                 <SearchBar variant="home" filters={HOME_SEARCH_FILTERS} onSearch={onSearch} />
               </div>
-              <div className="home-actions">
-                <button className="btn-home-primary" onClick={() => onSearch({})}>
-                  <span className="btn-icon">🔍</span>
-                  {labels.browse[language]}
+
+              {/* Trust Badges — clickable links */}
+              <div className="home-trust-strip">
+                <button className="trust-link" onClick={() => onSearch({})}>
+                  <span className="trust-icon">🏢</span>
+                  <span className="trust-text">Verified Units</span>
                 </button>
-              </div>
-              <div className="home-quick-stats">
-                <span className="stat-item"><strong>14</strong> units</span>
-                <span className="stat-sep">•</span>
-                <span className="stat-item"><strong>3</strong> buildings</span>
-                <span className="stat-sep">•</span>
-                <span className="stat-item">from <strong>₱300</strong>/night</span>
+                <span className="trust-sep">|</span>
+                <button className="trust-link" onClick={() => onSearch({})}>
+                  <span className="trust-icon">📅</span>
+                  <span className="trust-text">Flexible Dates</span>
+                </button>
+                <span className="trust-sep">|</span>
+                <button className="trust-link" onClick={() => onLogin?.('register')}>
+                  <span className="trust-icon">✅</span>
+                  <span className="trust-text">Easy Booking</span>
+                </button>
               </div>
             </div>
 

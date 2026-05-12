@@ -21,10 +21,9 @@ const TYPES = [
 ];
 
 const GUEST_ROWS = [
-  { key: 'adults', label: 'Adults', sub: 'Ages 13 or above', max: 30 },
-  { key: 'children', label: 'Children', sub: 'Ages 2 – 12', max: 10 },
-  { key: 'infants', label: 'Infants', sub: 'Under 2', max: 5 },
-  { key: 'pets', label: 'Pets', sub: 'Bringing a service animal?', max: 5 },
+  { key: 'adults',   label: 'Adults',   sub: 'Ages 13 or above', max: 30 },
+  { key: 'children', label: 'Children', sub: 'Ages 2 – 12',      max: 10 },
+  { key: 'infants',  label: 'Infants',  sub: 'Under 2',          max: 5  },
 ];
 
 function GuestCounterRow({ label, sub, value, max, onDelta }) {
