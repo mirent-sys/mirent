@@ -3,6 +3,75 @@
   width: 312px;
 }
 
+/* Segmented Move in | Move out */
+.dp-segment-wrap {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--sand);
+}
+
+.dp-segment {
+  display: flex;
+  border-radius: 10px;
+  border: 1px solid var(--sand-dark);
+  overflow: hidden;
+  background: var(--cream);
+}
+
+.dp-seg-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: var(--ink-60);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.dp-seg-btn + .dp-seg-btn {
+  box-shadow: -1px 0 0 var(--sand-dark);
+}
+
+.dp-seg-btn:hover:not(:disabled) {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.dp-seg-btn.active {
+  background: var(--leaf);
+  color: white;
+}
+
+.dp-seg-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.dp-range-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 10px 0 0;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.dp-range-line .ph {
+  color: var(--ink-60);
+  font-weight: 500;
+}
+
+.dp-range-arrow {
+  color: var(--ink-30);
+  font-weight: 400;
+  font-size: 0.95rem;
+}
+
 .dp-head {
   display: flex;
   align-items: center;

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BNAME, TYPE_LABEL, MSHORT } from '../data/units';
+import { formatGuestSummary } from '../data/guests';
 import SearchBar from './SearchBar';
 import './Navbar.css';
 
@@ -11,6 +12,8 @@ export default function Navbar({ searched, filters, onSearch, onGoHome, onLogin 
   const dateLabel = filters.checkIn && filters.checkOut
     ? `${filters.checkIn.getDate()} ${MSHORT[filters.checkIn.getMonth()]} – ${filters.checkOut.getDate()} ${MSHORT[filters.checkOut.getMonth()]}`
     : 'Flexible dates';
+  const guestLabel = formatGuestSummary(filters.guests);
+  const dateGuestLabel = guestLabel ? `${dateLabel} · ${guestLabel}` : dateLabel;
 
   function handleSearch(f) {
     setEditOpen(false);
@@ -30,7 +33,7 @@ export default function Navbar({ searched, filters, onSearch, onGoHome, onLogin 
             <div className="nps-sep" />
             <span className="nps">{tLabel}</span>
             <div className="nps-sep" />
-            <span className="nps nps-muted">{dateLabel}</span>
+            <span className="nps nps-muted">{dateGuestLabel}</span>
           </div>
           <button
             className="btn-nav-edit"

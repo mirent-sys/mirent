@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { BNAME, TYPE_LABEL, MSHORT } from '../data/units';
+import { DEFAULT_GUESTS, mergeGuests, formatGuestSummary } from '../data/guests';
 import DatePicker from './DatePicker';
 import './SearchBar.css';
 
@@ -19,12 +20,54 @@ const TYPES = [
   { val: 'Parking', label: 'Parking slot', icon: '🚗' },
 ];
 
+const GUEST_ROWS = [
+  { key: 'adults', label: 'Adults', sub: 'Ages 13 or above', max: 30 },
+  { key: 'children', label: 'Children', sub: 'Ages 2 – 12', max: 10 },
+  { key: 'infants', label: 'Infants', sub: 'Under 2', max: 5 },
+  { key: 'pets', label: 'Pets', sub: 'Bringing a service animal?', max: 5 },
+];
+
+function GuestCounterRow({ label, sub, value, max, onDelta }) {
+  const atMin = value <= 0;
+  const atMax = value >= max;
+  return (
+    <div className="guest-row">
+      <div className="guest-row-text">
+        <span className="guest-row-label">{label}</span>
+        <span className="guest-row-sub">{sub}</span>
+      </div>
+      <div className="guest-counters">
+        <button
+          type="button"
+          className={`guest-cntr-btn${atMin ? ' disabled' : ''}`}
+          disabled={atMin}
+          aria-label={`Decrease ${label}`}
+          onClick={() => onDelta(-1)}
+        >
+          –
+        </button>
+        <span className="guest-cntr-val">{value}</span>
+        <button
+          type="button"
+          className={`guest-cntr-btn${atMax ? ' disabled' : ''}`}
+          disabled={atMax}
+          aria-label={`Increase ${label}`}
+          onClick={() => onDelta(1)}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function SearchBar({ variant = 'home', filters, onSearch }) {
   const [building, setBuilding] = useState(filters?.building || '');
   const [type, setType] = useState(filters?.type || '');
   const [checkIn, setCheckIn] = useState(filters?.checkIn || null);
   const [checkOut, setCheckOut] = useState(filters?.checkOut || null);
-  const [openDD, setOpenDD] = useState(null); // 'building' | 'type' | 'in' | 'out'
+  const [guests, setGuests] = useState(() => mergeGuests(filters?.guests));
+  const [openDD, setOpenDD] = useState(null); // 'building' | 'type' | 'guests' | 'dates'
   const ref = useRef(null);
 
   useEffect(() => {
@@ -35,14 +78,36 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  function pickDate(y, m, d) {
+  useEffect(() => {
+    if (!filters) return;
+    setBuilding(filters.building ?? '');
+    setType(filters.type ?? '');
+    setCheckIn(filters.checkIn ?? null);
+    setCheckOut(filters.checkOut ?? null);
+    setGuests(mergeGuests(filters.guests));
+  }, [filters]);
+
+  /** `leg`: 'in' | 'out' — from DatePicker segmented control */
+  function pickDate(y, m, d, leg = 'in') {
     const dt = new Date(y, m, d);
-    if (!checkIn || checkOut || dt <= checkIn) {
+    dt.setHours(0, 0, 0, 0);
+
+    if (leg === 'in') {
       setCheckIn(dt);
-      setCheckOut(null);
-    } else {
-      setCheckOut(dt);
+      setCheckOut(prev => {
+        if (!prev) return prev;
+        const p = new Date(prev);
+        p.setHours(0, 0, 0, 0);
+        return dt.getTime() >= p.getTime() ? null : prev;
+      });
+      return;
     }
+
+    if (!checkIn) return;
+    const cin = new Date(checkIn);
+    cin.setHours(0, 0, 0, 0);
+    if (dt.getTime() <= cin.getTime()) return;
+    setCheckOut(dt);
   }
 
   function clearDates() {
@@ -54,11 +119,28 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
     return d ? `${d.getDate()} ${MSHORT[d.getMonth()]}` : null;
   }
 
-  function handleSearch() {
-    setOpenDD(null);
-    onSearch({ building, type, checkIn, checkOut });
+  function fmtDateRange() {
+    if (checkIn && checkOut) return `${fmtDate(checkIn)} – ${fmtDate(checkOut)}`;
+    if (checkIn) return `${fmtDate(checkIn)} – move out?`;
+    return null;
   }
 
+  function bumpGuest(key, delta) {
+    const row = GUEST_ROWS.find(r => r.key === key);
+    const max = row?.max ?? 10;
+    setGuests(prev => {
+      const next = { ...prev, [key]: prev[key] + delta };
+      next[key] = Math.max(0, Math.min(max, next[key]));
+      return next;
+    });
+  }
+
+  function handleSearch() {
+    setOpenDD(null);
+    onSearch({ building, type, checkIn, checkOut, guests });
+  }
+
+  const guestSummary = formatGuestSummary(guests);
   const isEdit = variant === 'edit';
 
   return (
@@ -117,34 +199,39 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
 
       <div className="sc-div" />
 
-      {/* Check-in */}
+      {/* Guests (replaces former check-in field) */}
       <div className="sf-wrap">
-        <div className={`sf${openDD === 'in' ? ' active' : ''}`} onClick={() => setOpenDD(openDD === 'in' ? null : 'in')}>
-          <span className="sf-label">Check-in</span>
-          <span className={`sf-val${!checkIn ? ' ph' : ''}`}>{fmtDate(checkIn) || 'Add date'}</span>
+        <div className={`sf${openDD === 'guests' ? ' active' : ''}`} onClick={() => setOpenDD(openDD === 'guests' ? null : 'guests')}>
+          <span className="sf-label">Guests</span>
+          <span className={`sf-val${!guestSummary ? ' ph' : ''}`}>
+            {guestSummary || 'Add guests'}
+          </span>
         </div>
-        {openDD === 'in' && (
-          <div className="date-picker open">
-            <DatePicker
-              checkIn={checkIn}
-              checkOut={checkOut}
-              onPickDate={pickDate}
-              onClear={clearDates}
-              onClose={() => setOpenDD(null)}
-            />
+        {openDD === 'guests' && (
+          <div className="guest-picker open">
+            {GUEST_ROWS.map(({ key, label, sub, max }) => (
+              <GuestCounterRow
+                key={key}
+                label={label}
+                sub={sub}
+                value={guests[key]}
+                max={max}
+                onDelta={d => bumpGuest(key, d)}
+              />
+            ))}
           </div>
         )}
       </div>
 
       <div className="sc-div" />
 
-      {/* Check-out */}
+      {/* Move in / move out — one trigger, one dropdown, range on shared calendar */}
       <div className="sf-wrap">
-        <div className={`sf${openDD === 'out' ? ' active' : ''}`} onClick={() => setOpenDD(openDD === 'out' ? null : 'out')}>
-          <span className="sf-label">Check-out</span>
-          <span className={`sf-val${!checkOut ? ' ph' : ''}`}>{fmtDate(checkOut) || 'Add date'}</span>
+        <div className={`sf${openDD === 'dates' ? ' active' : ''}`} onClick={() => setOpenDD(openDD === 'dates' ? null : 'dates')}>
+          <span className="sf-label">Move in / out</span>
+          <span className={`sf-val${!fmtDateRange() ? ' ph' : ''}`}>{fmtDateRange() || 'Select dates'}</span>
         </div>
-        {openDD === 'out' && (
+        {openDD === 'dates' && (
           <div className="date-picker open">
             <DatePicker
               checkIn={checkIn}

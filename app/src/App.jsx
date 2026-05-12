@@ -6,16 +6,27 @@ import InquiryModal from './components/InquiryModal';
 import LoginModal from './components/LoginModal';
 import Chatbot from './components/Chatbot';
 import Toast from './components/Toast';
+import { DEFAULT_GUESTS, mergeGuests } from './data/guests';
 
 export default function App() {
   const [searched, setSearched] = useState(false);
-  const [filters, setFilters] = useState({ building: '', type: '', checkIn: null, checkOut: null });
+  const [filters, setFilters] = useState({
+    building: '',
+    type: '',
+    checkIn: null,
+    checkOut: null,
+    guests: { ...DEFAULT_GUESTS },
+  });
   const [inquireUnit, setInquireUnit] = useState(null);
   const [loginModal, setLoginModal] = useState(null); // null | 'login' | 'register'
   const [toast, setToast] = useState('');
 
   function handleSearch(f) {
-    setFilters(f);
+    setFilters(prev => ({
+      ...prev,
+      ...f,
+      guests: f.guests != null ? mergeGuests({ ...prev.guests, ...f.guests }) : prev.guests,
+    }));
     setSearched(true);
   }
 
@@ -37,7 +48,7 @@ export default function App() {
         onLogin={tab => setLoginModal(tab)}
       />
 
-      <HomePage visible={!searched} onSearch={handleSearch} />
+      <HomePage visible={!searched} onSearch={handleSearch} onLogin={tab => setLoginModal(tab)} />
 
       <ResultsPage
         visible={searched}
