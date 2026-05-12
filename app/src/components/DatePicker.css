@@ -1,18 +1,22 @@
+/* ========================================================
+   DATE PICKER INNER
+   Ultra-compact layout — all dates visible, zero scroll
+   ======================================================== */
 .date-picker-inner {
-  padding: 16px 18px;
-  width: 460px;
+  padding: 8px 14px 8px;
+  width: 320px;
 }
 
-/* Segmented Move in | Move out */
+/* ── Segmented Move in | Move out ── */
 .dp-segment-wrap {
-  margin-bottom: 10px;
-  padding-bottom: 8px;
+  margin-bottom: 6px;
+  padding-bottom: 5px;
   border-bottom: 1px solid var(--sand);
 }
 
 .dp-segment {
   display: flex;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid var(--sand-dark);
   overflow: hidden;
   background: var(--cream);
@@ -22,66 +26,46 @@
   flex: 1;
   border: none;
   background: transparent;
-  padding: 7px 12px;
-  font-size: 0.76rem;
+  padding: 4px 10px;
+  font-size: 0.7rem;
   font-weight: 600;
   font-family: var(--font-body);
   color: var(--ink-60);
   cursor: pointer;
   transition: background .15s, color .15s;
+  line-height: 1.4;
 }
+.dp-seg-btn + .dp-seg-btn { box-shadow: -1px 0 0 var(--sand-dark); }
+.dp-seg-btn:hover:not(:disabled) { color: var(--ink); background: rgba(255,255,255,.6); }
+.dp-seg-btn.active { background: var(--leaf); color: white; }
+.dp-seg-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
-.dp-seg-btn + .dp-seg-btn {
-  box-shadow: -1px 0 0 var(--sand-dark);
-}
-
-.dp-seg-btn:hover:not(:disabled) {
-  color: var(--ink);
-  background: rgba(255, 255, 255, 0.6);
-}
-
-.dp-seg-btn.active {
-  background: var(--leaf);
-  color: white;
-}
-
-.dp-seg-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
+/* ── Selected range display ── */
 .dp-range-line {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  margin: 6px 0 0;
-  font-size: 0.82rem;
+  gap: 0.35rem;
+  margin: 4px 0 0;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--ink);
 }
+.dp-range-line .ph { color: var(--ink-60); font-weight: 500; }
+.dp-range-arrow { color: var(--ink-30); font-weight: 400; font-size: 0.85rem; }
 
-.dp-range-line .ph {
-  color: var(--ink-60);
-  font-weight: 500;
-}
-
-.dp-range-arrow {
-  color: var(--ink-30);
-  font-weight: 400;
-  font-size: 0.95rem;
-}
-
+/* ── Month nav ── */
 .dp-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  margin-top: 2px;
 }
 
 .dp-month {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 0.86rem;
   font-weight: 700;
   color: var(--ink);
 }
@@ -90,70 +74,76 @@
   background: var(--cream);
   border: 1px solid var(--sand);
   color: var(--ink-60);
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all .12s;
+  flex-shrink: 0;
+  padding: 0;
 }
 .dp-nav:hover { background: var(--leaf); color: white; border-color: var(--leaf); }
 
+/* ── Calendar grid ── */
 .dp-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 1px;
 }
 
 .dp-day-hdr {
   text-align: center;
-  font-size: .57rem;
+  font-size: .5rem;
   font-weight: 700;
   color: var(--ink-60);
-  padding: 4px 0;
-  letter-spacing: .5px;
+  padding: 2px 0;
+  letter-spacing: .3px;
 }
 
 .dp-day {
   text-align: center;
-  padding: 6px 2px;
-  font-size: .82rem;
+  /* auto-fit: cells scale with picker width */
+  padding: 4px 1px;
+  font-size: .72rem;
   color: var(--ink);
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 5px;
   transition: all .1s;
   user-select: none;
+  line-height: 1.3;
 }
 .dp-day:hover:not(.blank):not(.past) { background: var(--cream); color: var(--leaf); font-weight: 500; }
 .dp-day.blank, .dp-day.past { color: var(--ink-30); cursor: default; pointer-events: none; }
-.dp-day.sel-in { background: var(--leaf); color: white; border-radius: 8px 0 0 8px; }
-.dp-day.sel-out { background: var(--leaf); color: white; border-radius: 0 8px 8px 0; }
+.dp-day.sel-in  { background: var(--leaf); color: white; border-radius: 5px 0 0 5px; }
+.dp-day.sel-out { background: var(--leaf); color: white; border-radius: 0 5px 5px 0; }
 .dp-day.in-range { background: var(--mint-soft); color: var(--leaf); border-radius: 0; }
 .dp-day.today { outline: 1.5px solid var(--terra); font-weight: 700; color: var(--terra); }
 
+/* ── Actions row ── */
 .dp-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
-  padding-top: 8px;
+  margin-top: 5px;
+  padding-top: 5px;
   border-top: 1px solid var(--sand);
 }
 
-.dp-hint { font-size: .67rem; color: var(--ink-60); font-style: italic; }
+.dp-hint { font-size: .58rem; color: var(--ink-60); font-style: italic; }
 
 .dp-clear {
   background: none;
   border: none;
   color: var(--ink-60);
-  font-size: .71rem;
+  font-size: .66rem;
   cursor: pointer;
   font-family: var(--font-body);
-  padding: 5px 8px;
-  border-radius: 6px;
+  padding: 3px 6px;
+  border-radius: 5px;
   transition: all .12s;
 }
 .dp-clear:hover { background: var(--cream); color: var(--ink); }
@@ -162,10 +152,10 @@
   background: var(--leaf);
   border: none;
   color: white;
-  font-size: .71rem;
+  font-size: .66rem;
   font-weight: 600;
-  padding: 6px 14px;
-  border-radius: 8px;
+  padding: 4px 12px;
+  border-radius: 6px;
   cursor: pointer;
   font-family: var(--font-body);
   transition: background .15s;

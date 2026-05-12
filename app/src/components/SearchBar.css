@@ -121,11 +121,12 @@
 .dd-icon { width: 26px; text-align: center; font-size: 1rem; }
 .dd-sep { height: 1px; background: var(--sand); margin: 4px 0; }
 
-/* Date picker popup — wider to feel roomier */
+/* Date picker popup — opens DOWNWARD, compact, never covers footer */
 .date-picker {
   position: absolute;
-  top: calc(100% + 10px);
-  right: 0;           /* anchor to right of the dates field */
+  top: calc(100% + 8px);   /* just below the search bar */
+  bottom: auto;
+  right: 0;
   left: auto;
   background: white;
   border: 1px solid var(--sand);
@@ -133,14 +134,18 @@
   z-index: 600;
   box-shadow: var(--shadow-lg);
   animation: popIn .18s cubic-bezier(.34,1.56,.64,1);
+  /* auto-fit: never taller than the space above the footer */
+  max-height: calc(100vh - 48px - 55%);
+  overflow: hidden;
 }
 
-/* Guest picker (replaces former check-in control) */
+/* Guest picker — opens DOWNWARD (original behaviour) */
 .guest-picker {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
+  bottom: auto;
   left: 0;
-  width: 230px;          /* fixed narrow — counter sits close to label */
+  width: 230px;
   background: white;
   border: 1px solid var(--sand);
   border-radius: var(--radius);
@@ -148,6 +153,7 @@
   box-shadow: var(--shadow-lg);
   animation: popIn .18s cubic-bezier(.34,1.56,.64,1);
   padding: 0.1rem 0;
+  overflow: visible;
 }
 
 .guest-row {

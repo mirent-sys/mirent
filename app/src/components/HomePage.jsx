@@ -37,15 +37,21 @@ const heroAds = [
 ];
 
 const leftAds = [
-  { title: 'Studio Unit',  building: 'Gramercy',      price: '₱800/night',   tag: 'Available', tagColor: 'green' },
-  { title: '1BR Suite',    building: 'Knightsbridge',  price: '₱1,500/night', tag: 'Featured',  tagColor: 'terra' },
-  { title: 'Parking Slot', building: 'Milano',         price: '₱300/night',   tag: 'New',       tagColor: 'blue'  },
+  { title: 'Studio Unit',  building: 'Gramercy',     price: '₱800/night',   tag: 'Available', tagColor: 'green',
+    thumb: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=120&h=120&fit=crop&crop=center' },
+  { title: '1BR Suite',    building: 'Knightsbridge', price: '₱1,500/night', tag: 'Featured',  tagColor: 'terra',
+    thumb: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=120&h=120&fit=crop&crop=center' },
+  { title: 'Parking Slot', building: 'Milano',        price: '₱300/night',   tag: 'New',       tagColor: 'blue',
+    thumb: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=120&h=120&fit=crop&crop=center' },
 ];
 
 const rightAds = [
-  { title: '2BR Corner',    building: 'Gramercy',     price: '₱2,200/night', tag: 'Hot Deal',  tagColor: 'terra' },
-  { title: 'Studio Deluxe', building: 'Milano',        price: '₱950/night',   tag: 'Available', tagColor: 'green' },
-  { title: '3BR Penthouse', building: 'Knightsbridge', price: '₱4,500/night', tag: 'Premium',   tagColor: 'gold'  },
+  { title: '2BR Corner',    building: 'Gramercy',     price: '₱2,200/night', tag: 'Hot Deal',  tagColor: 'terra', bldKey: 'gramercy',
+    thumb: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=120&h=120&fit=crop&crop=center' },
+  { title: 'Studio Deluxe', building: 'Milano',        price: '₱950/night',   tag: 'Available', tagColor: 'green', bldKey: 'milano',
+    thumb: 'https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=120&h=120&fit=crop&crop=center' },
+  { title: '3BR Penthouse', building: 'Knightsbridge', price: '₱4,500/night', tag: 'Premium',   tagColor: 'gold',  bldKey: 'knightsbridge',
+    thumb: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=120&h=120&fit=crop&crop=center' },
 ];
 
 export default function HomePage({ visible, onSearch, onLogin }) {
@@ -88,11 +94,21 @@ export default function HomePage({ visible, onSearch, onLogin }) {
           <aside className="home-side-ads">
             <p className="side-ads-label">Featured Units</p>
             {leftAds.map((ad, i) => (
-              <div key={i} className="side-ad-card" onClick={() => onSearch({ building: ad.building.toLowerCase().replace(/ .*/,'') })}>
-                <span className={`side-ad-tag tag-${ad.tagColor}`}>{ad.tag}</span>
-                <div className="side-ad-title">{ad.title}</div>
-                <div className="side-ad-building">{ad.building}</div>
-                <div className="side-ad-price">{ad.price}</div>
+              <div
+                key={i}
+                className={`side-ad-card accent-${ad.tagColor}`}
+                onClick={() => onSearch({ building: ad.building.toLowerCase().split(' ')[0] })}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => e.key === 'Enter' && onSearch({ building: ad.building.toLowerCase().split(' ')[0] })}
+              >
+                <img src={ad.thumb} alt={ad.title} className="side-ad-thumb" />
+                <div className="side-ad-info">
+                  <span className={`side-ad-tag tag-${ad.tagColor}`}>{ad.tag}</span>
+                  <div className="side-ad-title">{ad.title}</div>
+                  <div className="side-ad-building">{ad.building}</div>
+                  <div className="side-ad-price">{ad.price}</div>
+                </div>
               </div>
             ))}
           </aside>
@@ -169,11 +185,21 @@ export default function HomePage({ visible, onSearch, onLogin }) {
           <aside className="home-side-ads">
             <p className="side-ads-label">Today's Picks</p>
             {rightAds.map((ad, i) => (
-              <div key={i} className="side-ad-card" onClick={() => onSearch({})}>
-                <span className={`side-ad-tag tag-${ad.tagColor}`}>{ad.tag}</span>
-                <div className="side-ad-title">{ad.title}</div>
-                <div className="side-ad-building">{ad.building}</div>
-                <div className="side-ad-price">{ad.price}</div>
+              <div
+                key={i}
+                className={`side-ad-card accent-${ad.tagColor}`}
+                onClick={() => onSearch({ building: ad.bldKey })}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => e.key === 'Enter' && onSearch({ building: ad.bldKey })}
+              >
+                <img src={ad.thumb} alt={ad.title} className="side-ad-thumb" />
+                <div className="side-ad-info">
+                  <span className={`side-ad-tag tag-${ad.tagColor}`}>{ad.tag}</span>
+                  <div className="side-ad-title">{ad.title}</div>
+                  <div className="side-ad-building">{ad.building}</div>
+                  <div className="side-ad-price">{ad.price}</div>
+                </div>
               </div>
             ))}
           </aside>
