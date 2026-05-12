@@ -218,6 +218,15 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
                 onDelta={d => bumpGuest(key, d)}
               />
             ))}
+            <div className="guest-done-wrap">
+              <button
+                type="button"
+                className="guest-done-btn"
+                onClick={() => setOpenDD('dates')}
+              >
+                Done &amp; Pick Dates →
+              </button>
+            </div>
           </div>
         )}
       </div>

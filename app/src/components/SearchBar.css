@@ -185,24 +185,26 @@
 
 /* ============================================================
    DATE PICKER popup
+   Always fixed below topbar — Move in/Move out always visible
    ============================================================ */
 .date-picker {
-  position: absolute;
-  top: calc(100% + 8px);
+  position: fixed;
+  top: 55px;          /* just below the topbar */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 340px;
   bottom: auto;
-  right: 0;
-  left: auto;
   background: rgba(255,255,255,.98);
   border: 1px solid rgba(64,145,108,.18);
   border-radius: 18px;
-  z-index: 600;
+  z-index: 1000;
   box-shadow:
-    0 4px 32px rgba(13,27,18,.14),
-    0 1px 4px rgba(13,27,18,.06);
+    0 8px 40px rgba(13,27,18,.18),
+    0 2px 8px rgba(13,27,18,.08);
   animation: popIn .18s cubic-bezier(.34,1.56,.64,1);
-  /* compact enough to fit below search bar without covering footer */
-  max-height: 340px;
-  overflow: hidden;
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+  overflow-x: hidden;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -239,6 +241,28 @@
   border-bottom: 1px solid rgba(64,145,108,.1);
 }
 .guest-row:last-of-type { border-bottom: none; }
+
+/* Done button — desktop default */
+.guest-done-wrap {
+  padding: 6px 10px 6px;
+  border-top: 1px solid rgba(64,145,108,.12);
+}
+.guest-done-btn {
+  width: 100%;
+  padding: 8px;
+  background: var(--leaf);
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-body);
+  letter-spacing: 0.03em;
+  transition: filter .15s;
+}
+.guest-done-btn:hover { filter: brightness(1.1); }
+
 
 .guest-row-text {
   display: flex;
@@ -306,123 +330,140 @@
   cursor: not-allowed;
 }
 
-/* ============================================================
-   MOBILE PORTRAIT — vertical stacked search bar ≤ 640px
-   ============================================================ */
+/* =====================================================================
+   MOBILE  ≤ 640px  —  2×2 compact search grid
+   ===================================================================== */
 @media (max-width: 640px) {
 
+  /* ── Search card: 2×2 grid ── */
   .search-card {
-    flex-direction: column;
-    border-radius: 20px;
-    padding: 4px 0 6px;
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    grid-template-rows: auto 1px auto auto;
+    border-radius: 18px;
+    padding: 0;
     overflow: visible;
-    /* slightly stronger shadow on mobile for depth */
+    flex-direction: unset;
     box-shadow:
       0 2px 0 rgba(255,255,255,.9) inset,
-      0 6px 28px rgba(13,27,18,.13),
-      0 1px 4px rgba(13,27,18,.06);
+      0 4px 20px rgba(13,27,18,.1),
+      0 1px 4px rgba(13,27,18,.05);
   }
 
+  /* ── Grid cell placement ── */
+  .search-card > *:nth-child(1) { grid-row: 1; grid-column: 1; }   /* Building */
+  .search-card > *:nth-child(2) {                                    /* vertical divider */
+    grid-row: 1; grid-column: 2;
+    width: auto; height: auto; margin: 0; align-self: stretch;
+    background: rgba(64,145,108,.18);
+  }
+  .search-card > *:nth-child(3) { grid-row: 1; grid-column: 3; }   /* Unit Type */
+  .search-card > *:nth-child(4) {                                    /* horizontal sep */
+    grid-row: 2; grid-column: 1 / 4;
+    width: auto; height: 1px; margin: 0;
+    background: rgba(64,145,108,.18);
+  }
+  .search-card > *:nth-child(5) { grid-row: 3; grid-column: 1; }   /* Guests */
+  .search-card > *:nth-child(6) {                                    /* vertical divider */
+    grid-row: 3; grid-column: 2;
+    width: auto; height: auto; margin: 0; align-self: stretch;
+    background: rgba(64,145,108,.18);
+  }
+  .search-card > *:nth-child(7) { grid-row: 3; grid-column: 3; }   /* Move In/Out */
+  .search-card > *:nth-child(8) {                                    /* Search btn */
+    grid-row: 4; grid-column: 1 / 4;
+    margin: 6px 10px 8px;
+    width: calc(100% - 20px);
+    border-radius: 12px;
+    justify-content: center;
+    font-size: .86rem;
+    padding: 13px 1rem;
+    min-height: 46px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Field styling ── */
   .sf-wrap { width: 100%; }
-
-  /* Each field: label on left (green), value on right */
   .sf {
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 0.75rem;
-    border-radius: 0;
-    padding: 12px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 10px 12px;
     height: auto;
-    min-height: 50px;
-    gap: 0;
+    min-height: 52px;
+    border-radius: 0;
   }
-  .sf:hover { background: rgba(232,245,238,.4); }
-  .sf.active { background: rgba(232,245,238,.6); box-shadow: none; }
+  .sf:hover  { background: rgba(232,245,238,.4); }
+  .sf.active { background: rgba(232,245,238,.65); box-shadow: none; }
 
   .sf-label {
-    font-size: .62rem;           /* larger on mobile too */
+    font-size: .52rem;
     font-weight: 900;
     letter-spacing: 0.14em;
-    margin-bottom: 0;
-    min-width: 86px;
+    margin-bottom: 1px;
+    min-width: unset;
+    white-space: nowrap;
     color: #1a4a35;
-    -webkit-text-fill-color: #1a4a35;  /* solid — no gradient clip on mobile */
+    -webkit-text-fill-color: #1a4a35;
     background: none;
-    text-shadow: 0 1px 0 rgba(255,255,255,.5);
   }
-
   .sf-val {
-    font-size: .88rem;
-    flex: 1;
+    font-size: .82rem;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
   }
 
-  /* Dividers: horizontal lines */
-  .sc-div {
-    width: auto;
-    height: 1px;
-    background: linear-gradient(to right, transparent 5%, rgba(64,145,108,.18) 20%, rgba(64,145,108,.18) 80%, transparent 95%);
-    margin: 0;
-    align-self: auto;
-  }
-
-  /* Search button: full width, taller for thumb-tap */
-  .search-btn {
-    margin: 8px 12px 4px;
-    padding: 14px 1rem;
-    border-radius: 14px;
-    width: calc(100% - 24px);
-    justify-content: center;
-    font-size: .92rem;
-    min-height: 48px;
-    letter-spacing: 0.06em;
-  }
-
-  /* Dropdowns: fixed, full-width, above footer */
+  /* ── All popups: fixed, full-width, above footer ── */
   .dropdown {
-    position: fixed;
-    top: auto;
-    bottom: 56px;
-    left: 12px;
-    right: 12px;
-    min-width: unset;
-    width: auto;
-    border-radius: 18px;
-    max-height: 55vh;
-    overflow-y: auto;
-    z-index: 800;
+    position: fixed; top: auto;
+    bottom: 56px; left: 10px; right: 10px;
+    min-width: unset; width: auto;
+    border-radius: 18px; max-height: 55vh;
+    overflow-y: auto; z-index: 800;
   }
-
   .guest-picker {
-    position: fixed;
-    top: auto;
-    bottom: 56px;
-    left: 12px;
-    right: 12px;
-    width: auto;
-    border-radius: 18px;
-    z-index: 800;
+    position: fixed; top: auto;
+    bottom: 56px; left: 10px; right: 10px;
+    width: auto; border-radius: 18px; z-index: 800;
   }
-
   .date-picker {
-    /* fixed so it's never clipped by overflow:hidden parents */
+    /* Full-width, top-fixed — Move in/Move out always at top */
     position: fixed;
-    top: auto;
-    bottom: 55px;      /* safely above the footer */
-    left: 10px;
-    right: 10px;
+    top: 52px;
+    left: 8px;
+    right: 8px;
+    bottom: auto;
     width: auto;
+    transform: none;
     border-radius: 18px;
-    max-height: calc(100vh - 55px - 15%);
+    max-height: calc(100vh - 100px);
     overflow-y: auto;
     overflow-x: hidden;
-    z-index: 900;
+    z-index: 1000;
   }
-}
 
-/* ── Homepage: just boost z-index, keep natural downward position ── */
-.home-search-wrapper .date-picker {
-  z-index: 700;
-}
+  /* ── Guest picker Done button ── */
+  .guest-done-wrap {
+    padding: 8px 12px 4px;
+    border-top: 1px solid rgba(64,145,108,.12);
+  }
+  .guest-done-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--leaf);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font-body);
+    letter-spacing: 0.03em;
+    transition: filter .15s;
+  }
+  .guest-done-btn:hover { filter: brightness(1.1); }
+
+/* ── Homepage: match global z-index 1000 ── */
+.home-search-wrapper .date-picker { z-index: 1000; }
