@@ -467,3 +467,5 @@
 
 /* ── Homepage: match global z-index 1000 ── */
 .home-search-wrapper .date-picker { z-index: 1000; }
+
+} /* end @media (max-width: 640px) */
