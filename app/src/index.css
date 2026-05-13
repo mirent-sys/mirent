@@ -39,6 +39,8 @@ html, body {
   color: var(--ink);
   line-height: 1.6;
   overflow: hidden;
+  /* Prevent layout shift from scrollbar on desktop browsers */
+  scrollbar-gutter: stable;
 }
 
 #root {
