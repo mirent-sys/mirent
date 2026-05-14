@@ -81,19 +81,58 @@
   flex: 1;
   border: none;
   background: transparent;
-  padding: 4px 10px;
+  padding: 6px 10px;
   font-size: 0.7rem;
   font-weight: 600;
   font-family: var(--font-body);
   color: var(--ink-60);
   cursor: pointer;
-  transition: background .15s, color .15s;
-  line-height: 1.4;
+  transition: background .15s, color .15s, box-shadow .15s;
+  line-height: 1.3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
 }
 .dp-seg-btn + .dp-seg-btn { box-shadow: -1px 0 0 var(--sand-dark); }
-.dp-seg-btn:hover:not(:disabled) { color: var(--ink); background: rgba(255,255,255,.6); }
-.dp-seg-btn.active { background: var(--leaf); color: white; }
-.dp-seg-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.dp-seg-btn:hover:not(:disabled):not(.active) { color: var(--ink); background: rgba(255,255,255,.6); }
+
+/* Currently selecting — vivid green, pulsing outline */
+.dp-seg-btn.active {
+  background: var(--leaf);
+  color: white;
+  box-shadow: -1px 0 0 var(--leaf), inset 0 -2px 0 rgba(0,0,0,.12);
+  outline: 2px solid rgba(64,145,108,.4);
+  outline-offset: -2px;
+}
+.dp-seg-btn.active .dp-seg-label { color: white; font-weight: 800; }
+.dp-seg-btn.active .dp-seg-date  { color: rgba(255,255,255,.85); font-weight: 600; }
+
+/* Already done — muted, gray-green, checkmark vibe */
+.dp-seg-btn.done {
+  background: rgba(232,245,238,.55);
+  color: #4a7a62;
+}
+.dp-seg-btn.done .dp-seg-label { color: #4a7a62; font-weight: 700; }
+.dp-seg-btn.done .dp-seg-date  { color: #2d6a4f; font-weight: 700; font-size: .65rem; }
+
+/* Disabled (Move Out before Move In is set) */
+.dp-seg-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+
+/* Label + date sub-text inside each tab */
+.dp-seg-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  line-height: 1;
+}
+.dp-seg-date {
+  font-size: 0.64rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+}
 
 /* ── Selected range display ── */
 .dp-range-line {

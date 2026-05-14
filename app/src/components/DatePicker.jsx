@@ -47,42 +47,56 @@ export default function DatePicker({ checkIn, checkOut, onPickDate, onClear, onC
     const dt = new Date(curYear, curMonth, d);
     if (dt < today) return;
     onPickDate(curYear, curMonth, d, activeLeg);
+    // Auto-advance: after picking Move In, jump to Move Out
+    if (activeLeg === 'in') {
+      setActiveLeg('out');
+    }
   }
 
   const hint = activeLeg === 'in'
-    ? 'Tap a date to set move in'
-    : 'Tap a date after move in for move out';
+    ? '👇 Tap a date to set your move-in'
+    : checkIn
+      ? '👇 Now tap your move-out date'
+      : 'Set move-in first';
 
   return (
     <div className="date-picker-inner">
       <div className="dp-segment-wrap">
         <div className="dp-segment" role="tablist" aria-label="Choose move in or move out">
+          {/* Move In tab */}
           <button
             type="button"
             role="tab"
             aria-selected={activeLeg === 'in'}
-            className={`dp-seg-btn${activeLeg === 'in' ? ' active' : ''}`}
+            className={`dp-seg-btn${
+              activeLeg === 'in' ? ' active' : checkIn ? ' done' : ''
+            }`}
             onClick={() => setActiveLeg('in')}
           >
-            Move in
+            <span className="dp-seg-label">Move in</span>
+            <span className="dp-seg-date">
+              {checkIn ? `✓ ${fmtShort(checkIn)}` : 'Select date'}
+            </span>
           </button>
+
+          {/* Move Out tab */}
           <button
             type="button"
             role="tab"
             aria-selected={activeLeg === 'out'}
-            className={`dp-seg-btn${activeLeg === 'out' ? ' active' : ''}`}
+            className={`dp-seg-btn${
+              activeLeg === 'out' ? ' active' : checkOut ? ' done' : ''
+            }`}
             disabled={!checkIn}
             title={!checkIn ? 'Set move in first' : undefined}
             onClick={() => setActiveLeg('out')}
           >
-            Move out
+            <span className="dp-seg-label">Move out</span>
+            <span className="dp-seg-date">
+              {checkOut ? `✓ ${fmtShort(checkOut)}` : !checkIn ? 'After move-in' : 'Select date'}
+            </span>
           </button>
         </div>
-        <p className="dp-range-line" aria-live="polite">
-          <span className={!checkIn ? 'ph' : ''}>{fmtShort(checkIn) || '—'}</span>
-          <span className="dp-range-arrow">→</span>
-          <span className={!checkOut ? 'ph' : ''}>{fmtShort(checkOut) || '—'}</span>
-        </p>
       </div>
 
       <div className="dp-head">

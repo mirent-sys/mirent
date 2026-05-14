@@ -472,15 +472,16 @@
     z-index: 800;
   }
   .date-picker {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
-    width: 320px;
-    max-width: calc(100vw - 16px);
+    position: fixed;
+    top: 60px;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: min(340px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
     bottom: auto;
     border-radius: 18px;
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 130px);
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 1000;

@@ -391,30 +391,12 @@
   /* Remove desktop oval glow */
   .home-search-wrapper::after { display: none; }
 
-  /* Wrapper: add floating label via ::before */
+  /* Wrapper: slide-in entrance only, no label */
   .home-search-wrapper {
     position: relative;
     animation: searchSlideIn .5s cubic-bezier(.34,1.4,.64,1) both;
   }
-  .home-search-wrapper::before {
-    content: '🔍  Find your perfect unit';
-    display: block;
-    text-align: center;
-    font-size: clamp(.62rem, 2.6vw, .74rem);
-    font-weight: 800;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: #0f3323;
-    background: linear-gradient(90deg, rgba(64,145,108,.13), rgba(193,68,14,.10), rgba(64,145,108,.13));
-    border: 1.5px solid rgba(64,145,108,.28);
-    border-radius: 999px;
-    padding: .28rem .9rem;
-    margin-bottom: .45rem;
-    animation: searchLabelPulse 2.2s ease-in-out infinite;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 1px 6px rgba(64,145,108,.12);
-  }
+  .home-search-wrapper::before { display: none; }
 
   /* Card itself: gradient border + pulsing glow */
   .home-search-wrapper .search-card {
