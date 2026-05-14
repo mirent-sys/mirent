@@ -242,7 +242,7 @@ export default function HomePage({ visible, onSearch, onLogin }) {
               </div>
               <div className="hss-sep" />
               <div className="hss-item">
-                <span className="hss-num">BGC</span>
+                <span className="hss-num">MAKATI</span>
                 <span className="hss-label">Metro Manila</span>
               </div>
               <div className="hss-sep" />
