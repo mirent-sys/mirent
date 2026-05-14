@@ -223,3 +223,11 @@
 .chat-send svg { width: 15px; height: 15px; stroke: white; fill: none; stroke-width: 2; }
 .chat-send:hover:not(:disabled) { background: var(--leaf-mid); transform: scale(1.08); }
 .chat-send:disabled { background: var(--sand-dark); cursor: default; }
+
+/* ── Hide floating assistant on mobile ── */
+@media (max-width: 640px) {
+  .chat-bubble,
+  .chat-window {
+    display: none !important;
+  }
+}
