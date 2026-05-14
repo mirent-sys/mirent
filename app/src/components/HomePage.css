@@ -574,17 +574,12 @@
     align-items: center;
   }
 
-  /* Side ads: un-hide, each takes half width, appear below center */
+  /* Hide BOTH side panels on mobile — Buildings and Also Browse aside */
   .home-side-ads {
-    display: flex !important;
-    order: 2;
-    flex: 0 0 50%;
-    width: 50%;
-    min-width: 0;
-    flex-direction: column;
-    padding: 0.3rem 0.4rem;
-    gap: 0.3rem;
-    overflow-y: visible;
+    display: none !important;
+  }
+  .also-browse-panel {
+    display: none !important;
   }
 
   /* Compact side-ad cards on mobile */
@@ -689,6 +684,21 @@
   .btn-fill-home {
     font-size: 0.7rem;
     padding: 0.28rem 0.85rem;
+  }
+
+  /* ── Mobile: make the whole page scrollable so footer is at the bottom ── */
+  .home-page {
+    position: relative;     /* leave fixed layout */
+    overflow-y: auto;       /* allow vertical scroll */
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    height: 100dvh;         /* full viewport height */
+    min-height: 100dvh;
+    flex-direction: column;
+  }
+  .home-content {
+    flex: 1 0 auto;         /* grow to push footer down */
+    overflow: visible;
   }
 }
 
@@ -1135,3 +1145,148 @@
 @media (max-height: 520px) {
   .home-top-picks { display: none; }
 }
+
+/* ========================================
+   ALSO BROWSE — DESKTOP (scrollable vertical list)
+   ======================================== */
+/* Desktop default: show list, hide carousel */
+.also-browse-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 110px);
+  padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(64,145,108,.25) transparent;
+}
+.also-browse-list::-webkit-scrollbar { width: 3px; }
+.also-browse-list::-webkit-scrollbar-track { background: transparent; }
+.also-browse-list::-webkit-scrollbar-thumb {
+  background: rgba(64,145,108,.3);
+  border-radius: 4px;
+}
+
+/* Hide the carousel on desktop */
+.also-browse-carousel { display: none; }
+
+/* Mobile-only Also Browse section — hidden on desktop */
+.also-browse-mobile-section { display: none; }
+
+
+
+/* ========================================
+   ALSO BROWSE — MOBILE (horizontal carousel)
+   ======================================== */
+@media (max-width: 640px) {
+  /* Hide desktop list on mobile */
+  .also-browse-list { display: none !important; }
+
+  /* Show the mobile Also Browse section inside center column */
+  .also-browse-mobile-section {
+    display: block;
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  /* Show mobile carousel */
+  .also-browse-carousel {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 0.1rem 0 0.6rem;   /* no horizontal padding — center column handles it */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .also-browse-carousel::-webkit-scrollbar { display: none; }
+
+  /* Each ab-card: 3 visible at once */
+  .ab-card {
+    flex: 0 0 calc(33.333% - 0.34rem);
+    min-width: calc(33.333% - 0.34rem);
+    background: rgba(255,255,255,.93);
+    border: 1px solid rgba(64,145,108,.18);
+    border-radius: 11px;
+    overflow: hidden;
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: transform .2s ease, box-shadow .2s ease;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(13,27,18,.07);
+  }
+  .ab-card:active { transform: scale(.97); }
+
+  /* Accent top border per tag color */
+  .ab-card.accent-terra { border-top: 2.5px solid var(--terra); }
+  .ab-card.accent-green { border-top: 2.5px solid var(--leaf); }
+  .ab-card.accent-blue  { border-top: 2.5px solid #3d6bcc; }
+  .ab-card.accent-gold  { border-top: 2.5px solid #b8860b; }
+
+  /* Card image */
+  .ab-img-wrap {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .ab-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease;
+  }
+  .ab-card:active .ab-img { transform: scale(1.05); }
+
+  /* Tag badge on image */
+  .ab-tag {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    font-size: 0.38rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    border-radius: 20px;
+    padding: 1px 4px;
+    line-height: 1.6;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  /* Card text info */
+  .ab-info {
+    padding: 0.28rem 0.32rem 0.32rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+    flex: 1;
+  }
+  .ab-name {
+    font-size: clamp(0.5rem, 2.1vw, 0.62rem);
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ab-location {
+    font-size: clamp(0.42rem, 1.7vw, 0.5rem);
+    color: var(--ink-60);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+}
+

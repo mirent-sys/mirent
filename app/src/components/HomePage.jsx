@@ -60,17 +60,87 @@ const leftBuildings = [
   },
 ];
 
-/* Right side: 1 building */
-const rightBuildings = [
+/* Also Browse: 10 agency listings in Gramercy/Makati */
+const ALSO_BROWSE = [
   {
-    key: 'milano',
-    name: 'Milano Residences',
-    location: 'Makati City',
-    units: 41,
-    priceFrom: '₱900',
-    tag: 'Spacious',
+    key: 'berms',
+    name: 'BERMS Transients',
+    location: 'Gramercy, Makati',
+    tag: 'Featured',
+    tagColor: 'terra',
+    thumb: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=120&h=120&fit=crop&crop=center',
+  },
+  {
+    key: 'dljb',
+    name: 'DL JB Cabin',
+    location: 'Gramercy, Makati',
+    tag: 'Cozy',
     tagColor: 'green',
+    thumb: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=120&h=120&fit=crop&crop=center',
+  },
+  {
+    key: 'sevendoors',
+    name: 'SevenDoors',
+    location: 'Gramercy, Makati',
+    tag: 'Popular',
+    tagColor: 'blue',
+    thumb: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=120&h=120&fit=crop&crop=center',
+  },
+  {
+    key: 'acesuites',
+    name: 'ACE Suites',
+    location: 'Gramercy, Makati',
+    tag: 'Premium',
+    tagColor: 'gold',
+    thumb: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=120&h=120&fit=crop&crop=center',
+  },
+  {
+    key: 'lvagency',
+    name: 'LV Agency',
+    location: 'Gramercy, Makati',
+    tag: 'New',
+    tagColor: 'terra',
+    thumb: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=120&h=120&fit=crop&crop=center',
+  },
+  {
+    key: 'xupanther',
+    name: 'Xupanther',
+    location: 'Gramercy, Makati',
+    tag: 'Trending',
+    tagColor: 'blue',
+    thumb: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=120&h=120&fit=crop&crop=center',
+  },
+  {
+    key: 'starry',
+    name: 'Starry',
+    location: 'Gramercy, Makati',
+    tag: 'Top Pick',
+    tagColor: 'gold',
     thumb: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=120&h=120&fit=crop&crop=center',
+  },
+  {
+    key: 'totoi',
+    name: 'Totoi Cabin',
+    location: 'Gramercy, Makati',
+    tag: 'Cozy',
+    tagColor: 'green',
+    thumb: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=120&h=120&fit=crop&crop=center',
+  },
+  {
+    key: 'luway',
+    name: 'Luway si Pongay',
+    location: 'Gramercy, Makati',
+    tag: 'Homey',
+    tagColor: 'terra',
+    thumb: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=120&h=120&fit=crop&crop=center',
+  },
+  {
+    key: 'extra10',
+    name: 'The Gramercy Unit',
+    location: 'Gramercy, Makati',
+    tag: 'Budget',
+    tagColor: 'green',
+    thumb: 'https://images.unsplash.com/photo-1502672023488-70e25813eb80?w=120&h=120&fit=crop&crop=center',
   },
 ];
 
@@ -150,7 +220,7 @@ export default function HomePage({ visible, onSearch, onLogin }) {
           </div>
           <div className="home-auth-btns">
             <button className="btn-ghost-home" onClick={() => onLogin?.('login')}>Sign in</button>
-            <button className="btn-fill-home"  onClick={() => onLogin?.('register')}>Register</button>
+            <button className="btn-fill-home" onClick={() => onLogin?.('register')}>Register</button>
           </div>
         </div>
 
@@ -290,29 +360,84 @@ export default function HomePage({ visible, onSearch, onLogin }) {
               </div>
             </div>
 
-          </div>
-
-          {/* Right Side — Building: Milano */}
-          <aside className="home-side-ads">
-            <p className="side-ads-label">Also Browse</p>
-            {rightBuildings.map((b) => (
-              <div
-                key={b.key}
-                className={`side-ad-card accent-${b.tagColor}`}
-                onClick={() => onSearch({ building: b.key })}
-                role="button"
-                tabIndex={0}
-                onKeyDown={e => e.key === 'Enter' && onSearch({ building: b.key })}
-              >
-                <img src={b.thumb} alt={b.name} className="side-ad-thumb" />
-                <div className="side-ad-info">
-                  <span className={`side-ad-tag tag-${b.tagColor}`}>{b.tag}</span>
-                  <div className="side-ad-title">{b.name}</div>
-                  <div className="side-ad-building">📍 {b.location}</div>
-                  <div className="side-ad-price">from {b.priceFrom}/night</div>
+            {/* ── Also Browse — mobile carousel (inside center column, hidden on desktop) ── */}
+            <div className="also-browse-mobile-section">
+              <div className="top-picks-header">
+                <div className="top-picks-title-wrap">
+                  <span className="top-picks-icon">🏘️</span>
+                  <span className="top-picks-title">Also Browse</span>
                 </div>
               </div>
-            ))}
+              <div className="also-browse-carousel">
+                {ALSO_BROWSE.map((b) => (
+                  <div
+                    key={b.key}
+                    className={`ab-card accent-${b.tagColor}`}
+                    onClick={() => onSearch({ building: b.key })}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => e.key === 'Enter' && onSearch({ building: b.key })}
+                  >
+                    <div className="ab-img-wrap">
+                      <img src={b.thumb} alt={b.name} className="ab-img" />
+                      <span className={`ab-tag tag-${b.tagColor}`}>{b.tag}</span>
+                    </div>
+                    <div className="ab-info">
+                      <div className="ab-name">{b.name}</div>
+                      <div className="ab-location">📍 {b.location}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Right Side — Also Browse: 10 agency carousel */}
+          <aside className="home-side-ads also-browse-panel">
+            <p className="side-ads-label">Also Browse</p>
+            {/* Mobile: horizontal carousel strip */}
+            <div className="also-browse-carousel">
+              {ALSO_BROWSE.map((b) => (
+                <div
+                  key={b.key}
+                  className={`ab-card accent-${b.tagColor}`}
+                  onClick={() => onSearch({ building: b.key })}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => e.key === 'Enter' && onSearch({ building: b.key })}
+                >
+                  <div className="ab-img-wrap">
+                    <img src={b.thumb} alt={b.name} className="ab-img" />
+                    <span className={`ab-tag tag-${b.tagColor}`}>{b.tag}</span>
+                  </div>
+                  <div className="ab-info">
+                    <div className="ab-name">{b.name}</div>
+                    <div className="ab-location">📍 {b.location}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop: vertical stacked list */}
+            <div className="also-browse-list">
+              {ALSO_BROWSE.map((b) => (
+                <div
+                  key={b.key}
+                  className={`side-ad-card accent-${b.tagColor}`}
+                  onClick={() => onSearch({ building: b.key })}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => e.key === 'Enter' && onSearch({ building: b.key })}
+                >
+                  <img src={b.thumb} alt={b.name} className="side-ad-thumb" />
+                  <div className="side-ad-info">
+                    <span className={`side-ad-tag tag-${b.tagColor}`}>{b.tag}</span>
+                    <div className="side-ad-title">{b.name}</div>
+                    <div className="side-ad-building">📍 {b.location}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </aside>
 
         </div>
