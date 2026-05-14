@@ -36,25 +36,17 @@ const heroAds = [
   },
 ];
 
-const leftAds = [
-  { title: 'Studio Unit',  building: 'Gramercy',     price: '₱800/night',   tag: 'Available', tagColor: 'green',
-    thumb: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=120&h=120&fit=crop&crop=center' },
-  { title: '1BR Suite',    building: 'Knightsbridge', price: '₱1,500/night', tag: 'Featured',  tagColor: 'terra',
-    thumb: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=120&h=120&fit=crop&crop=center' },
-  { title: 'Parking Slot', building: 'Milano',        price: '₱300/night',   tag: 'New',       tagColor: 'blue',
-    thumb: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=120&h=120&fit=crop&crop=center' },
-];
-
-const BUILDINGS_EXPLORER = [
+/* Left side: 2 buildings */
+const leftBuildings = [
   {
     key: 'gramercy',
     name: 'Gramercy Residences',
-    location: 'BGC, Taguig City',
+    location: 'BGC, Taguig',
     units: 48,
     priceFrom: '₱800',
     tag: 'Most Popular',
     tagColor: 'terra',
-    image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=500&h=180&fit=crop&crop=center',
+    thumb: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=120&h=120&fit=crop&crop=center',
   },
   {
     key: 'knightsbridge',
@@ -64,8 +56,12 @@ const BUILDINGS_EXPLORER = [
     priceFrom: '₱1,200',
     tag: 'Premium',
     tagColor: 'gold',
-    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=500&h=180&fit=crop&crop=center',
+    thumb: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=120&h=120&fit=crop&crop=center',
   },
+];
+
+/* Right side: 1 building */
+const rightBuildings = [
   {
     key: 'milano',
     name: 'Milano Residences',
@@ -74,17 +70,55 @@ const BUILDINGS_EXPLORER = [
     priceFrom: '₱900',
     tag: 'Spacious',
     tagColor: 'green',
-    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500&h=180&fit=crop&crop=center',
+    thumb: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=120&h=120&fit=crop&crop=center',
   },
 ];
 
-const rightAds = [
-  { title: '2BR Corner',    building: 'Gramercy',     price: '₱2,200/night', tag: 'Hot Deal',  tagColor: 'terra', bldKey: 'gramercy',
-    thumb: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=120&h=120&fit=crop&crop=center' },
-  { title: 'Studio Deluxe', building: 'Milano',        price: '₱950/night',   tag: 'Available', tagColor: 'green', bldKey: 'milano',
-    thumb: 'https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=120&h=120&fit=crop&crop=center' },
-  { title: '3BR Penthouse', building: 'Knightsbridge', price: '₱4,500/night', tag: 'Premium',   tagColor: 'gold',  bldKey: 'knightsbridge',
-    thumb: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=120&h=120&fit=crop&crop=center' },
+const TOP_PICKS_AGENCY = [
+  {
+    rank: 1,
+    name: 'Casa Elegante',
+    type: 'Studio',
+    location: 'Gramercy, Makati',
+    price: '₱2,800/night',
+    tag: 'Top Rated',
+    tagColor: 'terra',
+    badge: '🏆',
+    image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=240&fit=crop&crop=center',
+  },
+  {
+    rank: 2,
+    name: 'Manalo Suites',
+    type: '1-Bedroom Studio',
+    location: 'Makati City',
+    price: '₱1,500/night',
+    tag: 'Best Value',
+    tagColor: 'green',
+    badge: '🥈',
+    image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=240&fit=crop&crop=center',
+  },
+  {
+    rank: 3,
+    name: 'Air Be in BETTY',
+    type: 'Cozy Studio',
+    location: 'Gate 3, Taguig',
+    price: '₱1,100/night',
+    tag: 'Cozy Pick',
+    tagColor: 'blue',
+    badge: '🥉',
+    image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=400&h=240&fit=crop&crop=center',
+  },
+  {
+    rank: 4,
+    name: 'NamNam Cabin',
+    type: 'Penthouse Unit',
+    location: 'Rockwell, Makati',
+    price: '₱5,200/night',
+    tag: 'Premium',
+    tagColor: 'gold',
+    badge: '⭐',
+    image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=240&fit=crop&crop=center',
+  },
 ];
 
 export default function HomePage({ visible, onSearch, onLogin }) {
@@ -123,24 +157,24 @@ export default function HomePage({ visible, onSearch, onLogin }) {
         {/* ── 3-Column: side ads + center ── */}
         <div className="home-3col">
 
-          {/* Left Side Ads */}
+          {/* Left Side — Buildings: Gramercy + Knightsbridge */}
           <aside className="home-side-ads">
-            <p className="side-ads-label">Featured Units</p>
-            {leftAds.map((ad, i) => (
+            <p className="side-ads-label">Buildings</p>
+            {leftBuildings.map((b) => (
               <div
-                key={i}
-                className={`side-ad-card accent-${ad.tagColor}`}
-                onClick={() => onSearch({ building: ad.building.toLowerCase().split(' ')[0] })}
+                key={b.key}
+                className={`side-ad-card accent-${b.tagColor}`}
+                onClick={() => onSearch({ building: b.key })}
                 role="button"
                 tabIndex={0}
-                onKeyDown={e => e.key === 'Enter' && onSearch({ building: ad.building.toLowerCase().split(' ')[0] })}
+                onKeyDown={e => e.key === 'Enter' && onSearch({ building: b.key })}
               >
-                <img src={ad.thumb} alt={ad.title} className="side-ad-thumb" />
+                <img src={b.thumb} alt={b.name} className="side-ad-thumb" />
                 <div className="side-ad-info">
-                  <span className={`side-ad-tag tag-${ad.tagColor}`}>{ad.tag}</span>
-                  <div className="side-ad-title">{ad.title}</div>
-                  <div className="side-ad-building">{ad.building}</div>
-                  <div className="side-ad-price">{ad.price}</div>
+                  <span className={`side-ad-tag tag-${b.tagColor}`}>{b.tag}</span>
+                  <div className="side-ad-title">{b.name}</div>
+                  <div className="side-ad-building">📍 {b.location}</div>
+                  <div className="side-ad-price">from {b.priceFrom}/night</div>
                 </div>
               </div>
             ))}
@@ -218,54 +252,64 @@ export default function HomePage({ visible, onSearch, onLogin }) {
               </div>
             </div>
 
-            {/* ── Building Explorer ── */}
-            <div className="home-building-explorer">
-              {BUILDINGS_EXPLORER.map(b => (
-                <div
-                  key={b.key}
-                  className="hbe-card"
-                  onClick={() => onSearch({ building: b.key })}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={e => e.key === 'Enter' && onSearch({ building: b.key })}
-                >
-                  <div className="hbe-img-wrap">
-                    <img src={b.image} alt={b.name} className="hbe-img" />
-                    <span className={`hbe-tag tag-${b.tagColor}`}>{b.tag}</span>
-                  </div>
-                  <div className="hbe-info">
-                    <div className="hbe-name">{b.name}</div>
-                    <div className="hbe-location">📍 {b.location}</div>
-                    <div className="hbe-meta">
-                      <span className="hbe-units">{b.units} units</span>
-                      <span className="hbe-price">from {b.priceFrom}/night</span>
+            {/* ── Top Picks Agency Units ── */}
+            <div className="home-top-picks">
+              <div className="top-picks-header">
+                <div className="top-picks-title-wrap">
+                  <span className="top-picks-icon">🏅</span>
+                  <span className="top-picks-title">Top Picks Agency Units</span>
+                </div>
+                <button className="top-picks-more" onClick={() => onSearch({})}>Show More →</button>
+              </div>
+              <div className="top-picks-scroll">
+                {TOP_PICKS_AGENCY.map((unit) => (
+                  <div
+                    key={unit.rank}
+                    className="tp-card"
+                    onClick={() => onSearch({})}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => e.key === 'Enter' && onSearch({})}
+                  >
+                    <div className="tp-img-wrap">
+                      <img src={unit.image} alt={unit.name} className="tp-img" />
+                      <div className="tp-rank-badge">#{unit.rank}</div>
+                      <span className={`tp-tag tag-${unit.tagColor}`}>{unit.tag}</span>
+                    </div>
+                    <div className="tp-info">
+                      <div className="tp-name">
+                        <span className="tp-badge-emoji">{unit.badge}</span>
+                        {unit.name}
+                      </div>
+                      <div className="tp-type">{unit.type}</div>
+                      <div className="tp-location">📍 {unit.location}</div>
+                      <div className="tp-price">{unit.price}</div>
                     </div>
                   </div>
-                  <div className="hbe-arrow">›</div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
           </div>
 
-          {/* Right Side Ads */}
+          {/* Right Side — Building: Milano */}
           <aside className="home-side-ads">
-            <p className="side-ads-label">Today's Picks</p>
-            {rightAds.map((ad, i) => (
+            <p className="side-ads-label">Also Browse</p>
+            {rightBuildings.map((b) => (
               <div
-                key={i}
-                className={`side-ad-card accent-${ad.tagColor}`}
-                onClick={() => onSearch({ building: ad.bldKey })}
+                key={b.key}
+                className={`side-ad-card accent-${b.tagColor}`}
+                onClick={() => onSearch({ building: b.key })}
                 role="button"
                 tabIndex={0}
-                onKeyDown={e => e.key === 'Enter' && onSearch({ building: ad.bldKey })}
+                onKeyDown={e => e.key === 'Enter' && onSearch({ building: b.key })}
               >
-                <img src={ad.thumb} alt={ad.title} className="side-ad-thumb" />
+                <img src={b.thumb} alt={b.name} className="side-ad-thumb" />
                 <div className="side-ad-info">
-                  <span className={`side-ad-tag tag-${ad.tagColor}`}>{ad.tag}</span>
-                  <div className="side-ad-title">{ad.title}</div>
-                  <div className="side-ad-building">{ad.building}</div>
-                  <div className="side-ad-price">{ad.price}</div>
+                  <span className={`side-ad-tag tag-${b.tagColor}`}>{b.tag}</span>
+                  <div className="side-ad-title">{b.name}</div>
+                  <div className="side-ad-building">📍 {b.location}</div>
+                  <div className="side-ad-price">from {b.priceFrom}/night</div>
                 </div>
               </div>
             ))}
