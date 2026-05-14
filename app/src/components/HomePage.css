@@ -997,10 +997,10 @@
   transform: translateX(2px);
 }
 
-/* Desktop: 4 equal columns, no scroll */
+/* Desktop: 5 equal columns, no scroll */
 .top-picks-scroll {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 0.55rem;
   width: 100%;
   overflow: visible;
@@ -1120,18 +1120,33 @@
 }
 
 @media (max-width: 640px) {
-  /* Mobile: 3-column grid — only 3 cards shown, 4th hidden */
+  /* Mobile: horizontal swipeable carousel — first 3 cards fill screen exactly */
   .top-picks-scroll {
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-direction: row;
     gap: 0.35rem;
-    overflow: visible;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 0.1rem 0 0.6rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-  /* Hide the 4th card on mobile */
-  .tp-card:nth-child(4) { display: none; }
+  .top-picks-scroll::-webkit-scrollbar { display: none; }
+
+  /* 3 cards fit exactly: (100% - 2 gaps) / 3 */
   .tp-card {
-    width: 100%;
-    min-width: 0;
+    flex: 0 0 calc((100% - 0.7rem) / 3);
+    min-width: calc((100% - 0.7rem) / 3);
+    max-width: calc((100% - 0.7rem) / 3);
+    scroll-snap-align: start;
+    display: flex;
   }
+  /* Show ALL cards including 4th, 5th — swipe to reveal */
+  .tp-card:nth-child(n) { display: flex; }
+
   .tp-img-wrap { height: clamp(60px, 16vw, 82px); }
   .top-picks-title { font-size: clamp(0.68rem, 3vw, 0.78rem); }
   .tp-name  { font-size: clamp(0.56rem, 2.4vw, 0.68rem); }
@@ -1189,52 +1204,63 @@
     flex-shrink: 0;
   }
 
-  /* Show mobile carousel */
+  /* Show mobile carousel — infinite auto-scroll container */
   .also-browse-carousel {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    padding: 0.1rem 0 0.5rem;
+  }
+
+  /* Marquee animation — slow right-to-left */
+  @keyframes marquee-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .ab-track {
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    padding: 0.1rem 0 0.6rem;   /* no horizontal padding — center column handles it */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    gap: 0.35rem;
+    width: max-content;
+    animation: marquee-scroll 35s linear infinite;
   }
-  .also-browse-carousel::-webkit-scrollbar { display: none; }
+  .ab-track:hover,
+  .ab-track:active {
+    animation-play-state: paused;
+  }
 
-  /* Each ab-card: 3 visible at once */
+  /* Each ab-card: 4 visible at once across the screen */
   .ab-card {
-    flex: 0 0 calc(33.333% - 0.34rem);
-    min-width: calc(33.333% - 0.34rem);
-    background: rgba(255,255,255,.93);
+    flex: 0 0 calc((100vw - 1.7rem - 1.05rem) / 4);
+    /* 100vw minus side padding (0.85rem × 2) minus 3 gaps (0.35rem × 3) ÷ 4 */
+    min-width: calc((100vw - 1.7rem - 1.05rem) / 4);
+    max-width: calc((100vw - 1.7rem - 1.05rem) / 4);
+    background: rgba(255,255,255,.95);
     border: 1px solid rgba(64,145,108,.18);
-    border-radius: 11px;
+    border-radius: 9px;
     overflow: hidden;
     cursor: pointer;
-    scroll-snap-align: start;
     transition: transform .2s ease, box-shadow .2s ease;
     display: flex;
     flex-direction: column;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 2px 8px rgba(13,27,18,.07);
+    box-shadow: 0 1px 6px rgba(13,27,18,.06);
   }
   .ab-card:active { transform: scale(.97); }
 
   /* Accent top border per tag color */
-  .ab-card.accent-terra { border-top: 2.5px solid var(--terra); }
-  .ab-card.accent-green { border-top: 2.5px solid var(--leaf); }
-  .ab-card.accent-blue  { border-top: 2.5px solid #3d6bcc; }
-  .ab-card.accent-gold  { border-top: 2.5px solid #b8860b; }
+  .ab-card.accent-terra { border-top: 2px solid var(--terra); }
+  .ab-card.accent-green { border-top: 2px solid var(--leaf); }
+  .ab-card.accent-blue  { border-top: 2px solid #3d6bcc; }
+  .ab-card.accent-gold  { border-top: 2px solid #b8860b; }
 
   /* Card image */
   .ab-img-wrap {
     position: relative;
     width: 100%;
-    height: 60px;
+    height: 48px;
     overflow: hidden;
     flex-shrink: 0;
   }
@@ -1250,29 +1276,29 @@
   /* Tag badge on image */
   .ab-tag {
     position: absolute;
-    top: 3px;
-    left: 3px;
-    font-size: 0.38rem;
+    top: 2px;
+    left: 2px;
+    font-size: 0.34rem;
     font-weight: 700;
-    letter-spacing: .05em;
+    letter-spacing: .04em;
     text-transform: uppercase;
     border-radius: 20px;
-    padding: 1px 4px;
-    line-height: 1.6;
+    padding: 1px 3px;
+    line-height: 1.5;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
 
   /* Card text info */
   .ab-info {
-    padding: 0.28rem 0.32rem 0.32rem;
+    padding: 0.2rem 0.22rem 0.25rem;
     display: flex;
     flex-direction: column;
-    gap: 0.05rem;
+    gap: 0.02rem;
     flex: 1;
   }
   .ab-name {
-    font-size: clamp(0.5rem, 2.1vw, 0.62rem);
+    font-size: clamp(0.44rem, 1.9vw, 0.56rem);
     font-weight: 800;
     color: var(--ink);
     line-height: 1.2;
@@ -1281,7 +1307,7 @@
     text-overflow: ellipsis;
   }
   .ab-location {
-    font-size: clamp(0.42rem, 1.7vw, 0.5rem);
+    font-size: clamp(0.38rem, 1.5vw, 0.46rem);
     color: var(--ink-60);
     white-space: nowrap;
     overflow: hidden;

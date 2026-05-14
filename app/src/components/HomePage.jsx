@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import SearchBar from './SearchBar';
 import Footer from './Footer';
 import { DEFAULT_GUESTS } from '../data/guests';
@@ -189,11 +189,23 @@ const TOP_PICKS_AGENCY = [
     badge: '⭐',
     image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=240&fit=crop&crop=center',
   },
+  {
+    rank: 5,
+    name: 'JOPAICHES Staycation',
+    type: 'Staycation Unit',
+    location: 'Gramercy, Makati City',
+    price: '₱2,200/night',
+    tag: 'New',
+    tagColor: 'terra',
+    badge: '🌟',
+    image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=240&fit=crop&crop=center',
+  },
 ];
 
 export default function HomePage({ visible, onSearch, onLogin }) {
   const [language, setLanguage] = useState('en');
   const [currentAd, setCurrentAd] = useState(0);
+  const topPicksRef = useRef(null);
 
   const labels = { browse: { en: 'Browse Units', fil: 'Tuklasin ang Mga Unit' } };
   const toggleLanguage = () => setLanguage(l => (l === 'en' ? 'fil' : 'en'));
@@ -201,6 +213,30 @@ export default function HomePage({ visible, onSearch, onLogin }) {
   useEffect(() => {
     const t = setInterval(() => setCurrentAd(p => (p + 1) % heroAds.length), 3500);
     return () => clearInterval(t);
+  }, []);
+
+  /* Also Browse auto-scroll is handled purely by CSS animation */
+
+  /* ── Top Picks: touch drag/swipe on mobile ── */
+  const tpTouchStart = useRef(null);
+  const tpScrollStart = useRef(0);
+  const handleTpTouchStart = useCallback((e) => {
+    const el = topPicksRef.current;
+    if (!el) return;
+    tpTouchStart.current = e.touches[0].clientX;
+    tpScrollStart.current = el.scrollLeft;
+    el.style.scrollBehavior = 'auto';
+  }, []);
+  const handleTpTouchMove = useCallback((e) => {
+    const el = topPicksRef.current;
+    if (!el || tpTouchStart.current === null) return;
+    const dx = tpTouchStart.current - e.touches[0].clientX;
+    el.scrollLeft = tpScrollStart.current + dx;
+  }, []);
+  const handleTpTouchEnd = useCallback(() => {
+    const el = topPicksRef.current;
+    if (el) el.style.scrollBehavior = 'smooth';
+    tpTouchStart.current = null;
   }, []);
 
   return (
@@ -331,7 +367,13 @@ export default function HomePage({ visible, onSearch, onLogin }) {
                 </div>
                 <button className="top-picks-more" onClick={() => onSearch({})}>Show More →</button>
               </div>
-              <div className="top-picks-scroll">
+              <div
+                className="top-picks-scroll"
+                ref={topPicksRef}
+                onTouchStart={handleTpTouchStart}
+                onTouchMove={handleTpTouchMove}
+                onTouchEnd={handleTpTouchEnd}
+              >
                 {TOP_PICKS_AGENCY.map((unit) => (
                   <div
                     key={unit.rank}
@@ -369,25 +411,28 @@ export default function HomePage({ visible, onSearch, onLogin }) {
                 </div>
               </div>
               <div className="also-browse-carousel">
-                {ALSO_BROWSE.map((b) => (
-                  <div
-                    key={b.key}
-                    className={`ab-card accent-${b.tagColor}`}
-                    onClick={() => onSearch({ building: b.key })}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={e => e.key === 'Enter' && onSearch({ building: b.key })}
-                  >
-                    <div className="ab-img-wrap">
-                      <img src={b.thumb} alt={b.name} className="ab-img" />
-                      <span className={`ab-tag tag-${b.tagColor}`}>{b.tag}</span>
+                <div className="ab-track">
+                  {/* Duplicate cards for seamless infinite scroll */}
+                  {[...ALSO_BROWSE, ...ALSO_BROWSE].map((b, i) => (
+                    <div
+                      key={`${b.key}-${i}`}
+                      className={`ab-card accent-${b.tagColor}`}
+                      onClick={() => onSearch({ building: b.key })}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={e => e.key === 'Enter' && onSearch({ building: b.key })}
+                    >
+                      <div className="ab-img-wrap">
+                        <img src={b.thumb} alt={b.name} className="ab-img" />
+                        <span className={`ab-tag tag-${b.tagColor}`}>{b.tag}</span>
+                      </div>
+                      <div className="ab-info">
+                        <div className="ab-name">{b.name}</div>
+                        <div className="ab-location">📍 {b.location}</div>
+                      </div>
                     </div>
-                    <div className="ab-info">
-                      <div className="ab-name">{b.name}</div>
-                      <div className="ab-location">📍 {b.location}</div>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
 
