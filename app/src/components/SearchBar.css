@@ -470,28 +470,30 @@
     transform: translate(-50%, -50%);
     right: auto;
     width: min(300px, calc(100vw - 32px));
-    max-height: min(420px, calc(100dvh - 48px));
+    max-height: min(340px, calc(100dvh - 80px));
     overflow-y: auto;
     border-radius: 18px;
     z-index: 1100;
+    animation: none; /* popIn resets transform — keep true viewport center */
     box-shadow:
       0 12px 48px rgba(13,27,18,.2),
       0 2px 12px rgba(13,27,18,.1);
   }
   .date-picker {
     position: fixed;
-    top: 60px;
+    top: 50%;
     left: 50% !important;
     right: auto !important;
-    transform: translateX(-50%) !important;
+    transform: translate(-50%, -50%) !important;
     width: min(340px, calc(100vw - 24px));
     max-width: calc(100vw - 24px);
     bottom: auto;
     border-radius: 18px;
-    max-height: calc(100vh - 130px);
+    max-height: min(480px, calc(100dvh - 48px));
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 1050;
+    animation: none;
   }
 
   /* ── Guest picker Done button ── */
@@ -524,5 +526,9 @@
 
 /* Rendered under document.body via createPortal — above .home-page, footer, chatbot */
 .date-picker.date-picker--portal {
+  z-index: 10050;
+}
+
+.guest-picker.guest-picker--portal {
   z-index: 10050;
 }

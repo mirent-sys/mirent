@@ -68,15 +68,28 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
   const [checkOut, setCheckOut] = useState(filters?.checkOut || null);
   const [guests, setGuests] = useState(() => mergeGuests(filters?.guests));
   const [openDD, setOpenDD] = useState(null); // 'building' | 'type' | 'guests' | 'dates'
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches
+  );
   const ref = useRef(null);
   const datePortalRef = useRef(null);
+  const guestPortalRef = useRef(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)');
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   useEffect(() => {
     function handleClick(e) {
       const t = e.target;
       const inBar = ref.current?.contains(t);
       const inDatePortal = datePortalRef.current?.contains(t);
-      if (!inBar && !inDatePortal) setOpenDD(null);
+      const inGuestPortal = guestPortalRef.current?.contains(t);
+      if (!inBar && !inDatePortal && !inGuestPortal) setOpenDD(null);
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -146,6 +159,30 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
 
   const guestSummary = formatGuestSummary(guests);
   const isEdit = variant === 'edit';
+
+  const guestPickerBody = (
+    <>
+      {GUEST_ROWS.map(({ key, label, sub, max }) => (
+        <GuestCounterRow
+          key={key}
+          label={label}
+          sub={sub}
+          value={guests[key]}
+          max={max}
+          onDelta={d => bumpGuest(key, d)}
+        />
+      ))}
+      <div className="guest-done-wrap">
+        <button
+          type="button"
+          className="guest-done-btn"
+          onClick={() => setOpenDD('dates')}
+        >
+          Done &amp; Pick Dates →
+        </button>
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -218,28 +255,8 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
             </span>
           </div>
         </div>
-        {openDD === 'guests' && (
-          <div className="guest-picker open">
-            {GUEST_ROWS.map(({ key, label, sub, max }) => (
-              <GuestCounterRow
-                key={key}
-                label={label}
-                sub={sub}
-                value={guests[key]}
-                max={max}
-                onDelta={d => bumpGuest(key, d)}
-              />
-            ))}
-            <div className="guest-done-wrap">
-              <button
-                type="button"
-                className="guest-done-btn"
-                onClick={() => setOpenDD('dates')}
-              >
-                Done &amp; Pick Dates →
-              </button>
-            </div>
-          </div>
+        {openDD === 'guests' && !isMobile && (
+          <div className="guest-picker open">{guestPickerBody}</div>
         )}
       </div>
 
@@ -273,6 +290,14 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
             onClear={clearDates}
             onClose={() => setOpenDD(null)}
           />
+        </div>,
+        document.body
+      )}
+    {openDD === 'guests' &&
+      isMobile &&
+      createPortal(
+        <div ref={guestPortalRef} className="guest-picker open guest-picker--portal">
+          {guestPickerBody}
         </div>,
         document.body
       )}
