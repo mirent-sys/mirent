@@ -338,7 +338,7 @@
 
 /* ── Homepage: just boost z-index, keep natural downward position ── */
 .home-search-wrapper .date-picker {
-  z-index: 700;
+  z-index: 1000;
 }
 .home-search-wrapper .search-card {
   background: #ffffff;
