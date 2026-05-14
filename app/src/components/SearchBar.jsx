@@ -147,10 +147,12 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
       {/* Building */}
       <div className="sf-wrap">
         <div className={`sf${openDD === 'building' ? ' active' : ''}`} onClick={() => setOpenDD(openDD === 'building' ? null : 'building')}>
-          <span className="sf-label">Building</span>
-          <span className={`sf-val${!building ? ' ph' : ''}`}>
-            {building ? BNAME[building] : 'Any building'}
-          </span>
+          <div className="sf-inner-left">
+            <span className="sf-label">Building</span>
+            <span className={`sf-val${!building ? ' ph' : ''}`}>
+              {building ? BNAME[building] : 'Any building'}
+            </span>
+          </div>
         </div>
         {openDD === 'building' && (
           <div className="dropdown open">
@@ -174,10 +176,12 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
       {/* Type */}
       <div className="sf-wrap">
         <div className={`sf${openDD === 'type' ? ' active' : ''}`} onClick={() => setOpenDD(openDD === 'type' ? null : 'type')}>
-          <span className="sf-label">Unit Type</span>
-          <span className={`sf-val${!type ? ' ph' : ''}`}>
-            {type ? TYPE_LABEL[type] : 'Any type'}
-          </span>
+          <div className="sf-inner-left">
+            <span className="sf-label">Unit Type</span>
+            <span className={`sf-val${!type ? ' ph' : ''}`}>
+              {type ? TYPE_LABEL[type] : 'Any type'}
+            </span>
+          </div>
         </div>
         {openDD === 'type' && (
           <div className="dropdown open">
@@ -201,10 +205,12 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
       {/* Guests (replaces former check-in field) */}
       <div className="sf-wrap">
         <div className={`sf${openDD === 'guests' ? ' active' : ''}`} onClick={() => setOpenDD(openDD === 'guests' ? null : 'guests')}>
-          <span className="sf-label">Guests</span>
-          <span className={`sf-val${!guestSummary ? ' ph' : ''}`}>
-            {guestSummary || 'Add guests'}
-          </span>
+          <div className="sf-inner-left">
+            <span className="sf-label">Guests</span>
+            <span className={`sf-val${!guestSummary ? ' ph' : ''}`}>
+              {guestSummary || 'Add guests'}
+            </span>
+          </div>
         </div>
         {openDD === 'guests' && (
           <div className="guest-picker open">
@@ -236,8 +242,10 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
       {/* Move in / move out — one trigger, one dropdown, range on shared calendar */}
       <div className="sf-wrap">
         <div className={`sf${openDD === 'dates' ? ' active' : ''}`} onClick={() => setOpenDD(openDD === 'dates' ? null : 'dates')}>
-          <span className="sf-label">Move in / out</span>
-          <span className={`sf-val${!fmtDateRange() ? ' ph' : ''}`}>{fmtDateRange() || 'Select dates'}</span>
+          <div className="sf-inner-left">
+            <span className="sf-label">Move in / out</span>
+            <span className={`sf-val${!fmtDateRange() ? ' ph' : ''}`}>{fmtDateRange() || 'Select dates'}</span>
+          </div>
         </div>
         {openDD === 'dates' && (
           <div className="date-picker open">
