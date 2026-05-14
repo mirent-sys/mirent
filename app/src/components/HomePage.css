@@ -699,6 +699,10 @@
   .home-content {
     flex: 1 0 auto;         /* grow to push footer down */
     overflow: visible;
+    /* Footer uses z-index:1 on mobile; without this, main column stays at auto and the
+       entire block (including position:fixed date picker) paints under the footer. */
+    position: relative;
+    z-index: 2;
   }
 }
 

@@ -352,6 +352,7 @@
       0 2px 0 rgba(255,255,255,.9) inset,
       0 4px 20px rgba(13,27,18,.1),
       0 1px 4px rgba(13,27,18,.05);
+    position: static;        /* Allow date-picker to be truly fixed to viewport */
   }
 
   /* ── Vertical dividers — same as desktop ── */
@@ -463,13 +464,19 @@
     z-index: 800;
   }
   .guest-picker {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     right: auto;
-    width: 220px;
+    width: min(300px, calc(100vw - 32px));
+    max-height: min(420px, calc(100dvh - 48px));
+    overflow-y: auto;
     border-radius: 18px;
-    z-index: 800;
+    z-index: 1100;
+    box-shadow:
+      0 12px 48px rgba(13,27,18,.2),
+      0 2px 12px rgba(13,27,18,.1);
   }
   .date-picker {
     position: fixed;
@@ -484,7 +491,7 @@
     max-height: calc(100vh - 130px);
     overflow-y: auto;
     overflow-x: hidden;
-    z-index: 1000;
+    z-index: 1050;
   }
 
   /* ── Guest picker Done button ── */
@@ -509,7 +516,13 @@
   .guest-done-btn:hover { filter: brightness(1.1); }
 
   /* ── Homepage: ensure dropdowns overflow out of wrapper ── */
-  .home-search-wrapper .date-picker { z-index: 1000; }
+  .home-search-wrapper .date-picker { z-index: 1050; }
+  .home-search-wrapper .guest-picker { z-index: 1100; }
   .home-search-wrapper { overflow: visible; }
 
 } /* end @media (max-width: 640px) */
+
+/* Rendered under document.body via createPortal — above .home-page, footer, chatbot */
+.date-picker.date-picker--portal {
+  z-index: 10050;
+}

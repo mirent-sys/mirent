@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { BNAME, TYPE_LABEL, MSHORT } from '../data/units';
 import { DEFAULT_GUESTS, mergeGuests, formatGuestSummary } from '../data/guests';
 import DatePicker from './DatePicker';
@@ -68,10 +69,14 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
   const [guests, setGuests] = useState(() => mergeGuests(filters?.guests));
   const [openDD, setOpenDD] = useState(null); // 'building' | 'type' | 'guests' | 'dates'
   const ref = useRef(null);
+  const datePortalRef = useRef(null);
 
   useEffect(() => {
     function handleClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpenDD(null);
+      const t = e.target;
+      const inBar = ref.current?.contains(t);
+      const inDatePortal = datePortalRef.current?.contains(t);
+      if (!inBar && !inDatePortal) setOpenDD(null);
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -143,6 +148,7 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
   const isEdit = variant === 'edit';
 
   return (
+    <>
     <div ref={ref} className={`search-card${isEdit ? ' edit-card' : ''}`}>
       {/* Building */}
       <div className="sf-wrap">
@@ -247,17 +253,6 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
             <span className={`sf-val${!fmtDateRange() ? ' ph' : ''}`}>{fmtDateRange() || 'Select dates'}</span>
           </div>
         </div>
-        {openDD === 'dates' && (
-          <div className="date-picker open">
-            <DatePicker
-              checkIn={checkIn}
-              checkOut={checkOut}
-              onPickDate={pickDate}
-              onClear={clearDates}
-              onClose={() => setOpenDD(null)}
-            />
-          </div>
-        )}
       </div>
 
       <button className="search-btn" onClick={handleSearch}>
@@ -268,5 +263,19 @@ export default function SearchBar({ variant = 'home', filters, onSearch }) {
         Search
       </button>
     </div>
+    {openDD === 'dates' &&
+      createPortal(
+        <div ref={datePortalRef} className="date-picker open date-picker--portal">
+          <DatePicker
+            checkIn={checkIn}
+            checkOut={checkOut}
+            onPickDate={pickDate}
+            onClear={clearDates}
+            onClose={() => setOpenDD(null)}
+          />
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
